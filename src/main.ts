@@ -13,7 +13,7 @@ async function bootstrap() {
 	}));
 	app.enableCors();
 	const options = new DocumentBuilder()
-		.setTitle('Truy xuất nguồn gốc')
+		.setTitle('Phân phối âm thanh')
 		.addBearerAuth()
 		.setVersion('1.0');
 
