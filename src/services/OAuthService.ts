@@ -77,4 +77,8 @@ export class OAuthService {
             throw new ApplicationException(HttpStatus.SERVICE_UNAVAILABLE, MessageCode.A_SERVICE_UNAVAILABLE);
         }
     }
+
+    async reset(username: string, otp: string, password: string) {
+
+    }
 }

@@ -11,8 +11,9 @@ export class UserModal {
     updatedAt: Date;
     updatedBy: string;
     address: string;
+    age:string;
+    email:string;
     roles: string[];
-    enterprise: Object;
     phone: string;
     avatar: string;
     constructor(user: User) {
@@ -20,7 +21,6 @@ export class UserModal {
         this.username = user.username;
         this.fullName = user.fullName;
         this.phone = user.phone;
-        this.userId = user.userId;
         this.createdAt = user.createdAt;
         this.createdBy = user.createdBy;
         this.updatedAt = user.updatedAt;
@@ -28,7 +28,8 @@ export class UserModal {
         this.address = user.address;
         this.active = user.active;
         this.roles = user.roles;
-        this.enterprise = user.enterprise;
+        this.age = user.age;
+        this.email = user.email;
         this.avatar = user.avatar;
     }
 

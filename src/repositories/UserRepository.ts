@@ -15,31 +15,6 @@ export class UserRepository {
                     isDeleted: isDeleted === 'true', // Đã xóa hay chưa
                 },
             },
-            {
-                $lookup: {
-                    from: 'products',
-                    let: {
-                        username: '$username',
-                    },
-                    pipeline: [
-                        {
-                            $match: {
-                                $expr: {
-                                    $and: [
-                                        {
-                                            $eq: ['$isDeleted', false],
-                                        },
-                                        {
-                                            $eq: ['$owner', '$$username'],
-                                        },
-                                    ],
-                                },
-                            },
-                        },
-                    ],
-                    as: 'products',
-                },
-            },
         ]);
     }
 
@@ -50,41 +25,10 @@ export class UserRepository {
                     username,
                 },
             },
-            {
-                $lookup: {
-                    from: 'products',
-                    let: {
-                        username: '$username',
-                    },
-                    pipeline: [
-                        {
-                            $match: {
-                                $expr: {
-                                    $and: [
-                                        {
-                                            $eq: ['$isDeleted', false],
-                                        },
-                                        {
-                                            $eq: ['$owner', '$$username'],
-                                        },
-                                    ],
-                                },
-                            },
-                        },
-                    ],
-                    as: 'products',
-                },
-            },
         ]);
     }
 
-
-    async findEnterpriseWithBusinessActivityCodeOrUsername(code: string, username: string) {
-        return await this.userModel.findOne({
-            $or: [
-                { 'enterprise.businessActivityCode': code },
-                { username: username }
-            ]
-        }).exec()
+    async findByUid(userId: string): Promise<any> {
+        return await this.userModel.findById(userId).exec();
     }
 }

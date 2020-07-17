@@ -5,6 +5,7 @@ import {UserAuthDto} from '../dtos/UserAuthDto';
 import {ApplicationException} from '../controllers/ExceptionController';
 import {MessageCode} from '../commons/MessageCode';
 import {OAuthService} from './OAuthService';
+import { UserAuthForgetDto } from '../dtos/UserAuthForgetDto';
 
 @Injectable()
 export class AuthService {
@@ -25,13 +26,28 @@ export class AuthService {
 			throw new ApplicationException(HttpStatus.UNAUTHORIZED, MessageCode.USER_NOT_FOUND);
 		}
 		if (!user.active) {
-			throw new ApplicationException(HttpStatus.UNAUTHORIZED, "Người dùng chưa được kích hoạt hoặc đang bị" +
-				" khóa ");
+			throw new ApplicationException(HttpStatus.UNAUTHORIZED, "Người dùng chưa được kích hoạt hoặc đang bị khóa");
 		}
 		const userData: any = await this.oAuthService.auth(userAuthDto.username, userAuthDto.password);
 		const userPayload: any = {username: userData.username};
 		const JWT = this.jwtService.sign(userPayload);
 		return {token: JWT, info: user};
+	}
+
+	async resetPassphase(userAuthForgetDto:UserAuthForgetDto): Promise<any> {
+		const user = await this.userService.findOneByUsername(userAuthForgetDto.username);
+
+		if(!user){
+			throw new ApplicationException(HttpStatus.UNAUTHORIZED, MessageCode.USER_NOT_FOUND);
+		}
+
+		if(!user.active){
+			throw new ApplicationException(HttpStatus.UNAUTHORIZED, "Người dùng chưa được kích hoạt hoặc đang bị khóa")
+		}
+
+		const userData: any = await this.oAuthService.reset(userAuthForgetDto.username, userAuthForgetDto.otp, userAuthForgetDto.password);
+
+		return userData;
 	}
 
 	async checkToken(access_token: string): Promise<any> {

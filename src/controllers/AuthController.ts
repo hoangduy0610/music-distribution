@@ -1,11 +1,8 @@
 import {Body, Controller, HttpStatus, Post, Req, Res, Get, UseGuards} from '@nestjs/common';
 import {ApiOperation, ApiTags, ApiBearerAuth} from '@nestjs/swagger';
 import {UserAuthDto} from '../dtos/UserAuthDto';
+import {UserAuthForgetDto} from '../dtos/UserAuthForgetDto';
 import {AuthService} from '../services/AuthService';
-import { AuthGuard } from '@nestjs/passport';
-import { RolesGuard } from 'src/guards/RoleGuard';
-import { Roles } from 'src/guards/RoleDecorator';
-import { EnumRoles } from 'src/commons/EnumRoles';
 
 @ApiTags('auth')
 @Controller('auth')
@@ -18,13 +15,10 @@ export class AuthController {
 	async auth(@Req() req, @Res() res, @Body() userAuthDto: UserAuthDto) {
 		return res.status(HttpStatus.OK).json(await this.authService.login(userAuthDto));
 	}
-
-    @Get('/callback')
-    @UseGuards(AuthGuard('jwt'), RolesGuard)
-    @Roles(EnumRoles.ROLE_ADMIN)
-    @ApiBearerAuth()
-	async callback(@Req() req, @Res() res) {
+	
+    @Post('/reset')
+	async reset(@Req() req, @Res() res, @Body() userAuthForgetDto: UserAuthForgetDto) {
 		console.log('callback');
-		return res.status(HttpStatus.OK).json({msg:'ok'});
+		return res.status(HttpStatus.OK).json(await this.authService.resetPassphase(userAuthForgetDto));
 	}
 }
