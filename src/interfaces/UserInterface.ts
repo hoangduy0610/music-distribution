@@ -13,11 +13,11 @@ export interface User extends Document {
     updatedBy: string;
     address: string;
     roles: string[];
-    active: boolean,
+    active: boolean;
     bannedInfo: [{
-        banId: string,
-        text: string,
-        createdAt: string,
+        reason: string,
+        isWaiting: boolean,
+        createdAt: Date,
     }]
     isDeleted: boolean;
     avatar:string;

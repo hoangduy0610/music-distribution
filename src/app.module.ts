@@ -1,6 +1,7 @@
 import { Module } from '@nestjs/common';
 import { MongooseModule } from '@nestjs/mongoose';
 import { AuthModule } from './modules/AuthModule';
+import { UserModule } from './modules/UserModule';
 import { ConfigModule } from '@nestjs/config';
 
 require('dotenv').config();
@@ -17,6 +18,7 @@ require('dotenv').config();
             useCreateIndex: true
         }),
         AuthModule,
+        UserModule
     ],
 })
 export class AppModule {

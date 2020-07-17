@@ -16,6 +16,7 @@ export class UserModal {
     roles: string[];
     phone: string;
     avatar: string;
+    isDeleted:boolean;
     constructor(user: User) {
         this.id = user._id;
         this.username = user.username;
@@ -31,6 +32,7 @@ export class UserModal {
         this.age = user.age;
         this.email = user.email;
         this.avatar = user.avatar;
+        this.isDeleted = user.isDeleted;
     }
 
     public static fromUsers(users: User[]) {

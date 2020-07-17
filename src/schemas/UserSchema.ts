@@ -8,12 +8,12 @@ export const UserSchema = new Schema({
     address: {type: String, require: true},
     age: {type: String, require: true},
     email: {type: String, require: true},
-    active: {type: Boolean, required: false},
+    active: {type: Boolean, required: false, default:false},
     bannedInfo: {
         type: [
             {
-                id: {type: String, required: false},
-                text: {type: String, required: false},
+                reason: {type: String, required: false},
+                isWaiting: {type: Boolean, required: false},
                 createdAt: {type: Date, required: false},
             }], required: false
     },

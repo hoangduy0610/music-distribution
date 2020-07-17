@@ -1,8 +1,8 @@
-import {Body, Controller, HttpStatus, Post, Req, Res, Get, UseGuards} from '@nestjs/common';
-import {ApiOperation, ApiTags, ApiBearerAuth} from '@nestjs/swagger';
-import {UserAuthDto} from '../dtos/UserAuthDto';
-import {UserAuthForgetDto} from '../dtos/UserAuthForgetDto';
-import {AuthService} from '../services/AuthService';
+import { Body, Controller, HttpStatus, Post, Req, Res, Get } from '@nestjs/common';
+import { ApiOperation, ApiTags } from '@nestjs/swagger';
+import { UserAuthDto } from '../dtos/UserAuthDto';
+import { UserAuthForgetDto } from '../dtos/UserAuthForgetDto';
+import { AuthService } from '../services/AuthService';
 
 @ApiTags('auth')
 @Controller('auth')
@@ -11,12 +11,12 @@ export class AuthController {
 	}
 
 	@Post('')
-	@ApiOperation({summary: 'Đăng nhập', description: 'Api đăng nhập người dùng'})
+	@ApiOperation({ summary: 'Đăng nhập', description: 'Api đăng nhập người dùng' })
 	async auth(@Req() req, @Res() res, @Body() userAuthDto: UserAuthDto) {
 		return res.status(HttpStatus.OK).json(await this.authService.login(userAuthDto));
 	}
-	
-    @Post('/reset')
+
+	@Post('/reset')
 	async reset(@Req() req, @Res() res, @Body() userAuthForgetDto: UserAuthForgetDto) {
 		console.log('callback');
 		return res.status(HttpStatus.OK).json(await this.authService.resetPassphase(userAuthForgetDto));

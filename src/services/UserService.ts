@@ -9,6 +9,7 @@ import { OAuthService } from './OAuthService';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 import { User } from '../interfaces/UserInterface';
+import { UserUpdateProfileDto } from '../dtos/UserUpdateProfileDto';
 
 @Injectable()
 export class UserService {
@@ -35,41 +36,18 @@ export class UserService {
         return new UserModal(user);
     }
 
-    async findOneByUid(userId: string, username: string): Promise<UserModal> {
-        const userReq = await this.userRepository.findByUsername(username);
-        if (userReq[0].roles.includes(EnumRoles.ROLE_ADMIN)) {
-            if (!userId) {
-                return new UserModal(userReq[0]);
-            }
-            const findUser = await this.userRepository.findByUid(userId);
-            if (!findUser) {
-                throw new ApplicationException(HttpStatus.NOT_FOUND, MessageCode.USER_NOT_FOUND)
-            }
-            return new UserModal(findUser);
-        }
-    }
-
-    /**
-     * @param createdBy: Người tạo (Admin)
-     * @param userCreateDto: Thông tin người dùng cần tạo
-     */
     async create(createdBy: string, userCreateDto: UserCreateDto): Promise<UserModal> {
         const user = await this.userModel.findOne({ username: userCreateDto.username }).exec();
 
-        // Kiểm tra sự tồn tại của user
         if (user) {
             throw new ApplicationException(HttpStatus.BAD_REQUEST, MessageCode.USER_ALREADY_EXISTED);
         }
 
-        // Gọi đăng ký sang OAuth
         const response: any = await this.oAuthService.register(userCreateDto.username, userCreateDto.password);
 
         const responseData = await response.json();
 
-        // Đăng ký thành công
         if (response.status === 200) {
-
-            // Không lấy được userId - Đăng ký lỗi
             if (!responseData || !responseData.success) {
                 throw new ApplicationException(HttpStatus.FORBIDDEN, responseData.message || MessageCode.USER_CREATE_OAUTH_ERROR);
             }
@@ -81,7 +59,109 @@ export class UserService {
             return await this.findOneByUsername(newUser.username);
         }
 
+        throw new ApplicationException(response.status, responseData.message || response.statusText || MessageCode.USER_CREATE_OAUTH_ERROR);
+    }
+
+    async register(userCreateDto: UserCreateDto): Promise<UserModal> {
+        const user = await this.userModel.findOne({ username: userCreateDto.username }).exec();
+
+        if (user) {
+            throw new ApplicationException(HttpStatus.BAD_REQUEST, MessageCode.USER_ALREADY_EXISTED);
+        }
+
+        const response: any = await this.oAuthService.register(userCreateDto.username, userCreateDto.password);
+
+        const responseData = await response.json();
+
+        if (response.status === 200) {
+            if (!responseData || !responseData.success) {
+                throw new ApplicationException(HttpStatus.FORBIDDEN, responseData.message || MessageCode.USER_CREATE_OAUTH_ERROR);
+            }
+            const newUser = new this.userModel(userCreateDto);
+            newUser.createdBy = userCreateDto.username;
+            newUser.roles.push(EnumRoles.ROLE_USER);
+            newUser.active = false;
+            await newUser.save();
+            return await this.findOneByUsername(newUser.username);
+        }
+
         // Đăng ký không thành công
         throw new ApplicationException(response.status, responseData.message || response.statusText || MessageCode.USER_CREATE_OAUTH_ERROR);
+    }
+
+    async active(userId: string): Promise<UserModal> {
+        const user = await this.userModel.findById(userId);
+        if (!user) {
+            throw new ApplicationException(HttpStatus.BAD_REQUEST, MessageCode.USER_NOT_FOUND)
+        }
+
+        if (user.active == true) {
+            throw new ApplicationException(HttpStatus.BAD_REQUEST, MessageCode.USER_ALREADY_BE_ACTIVE)
+        }
+
+        user.active = true;
+        await user.save();
+        return await this.findOneByUsername(user.username);
+        //return await new this.userModel(user.save());
+    }
+
+    async updateProfile(username: string, updatedBy: string, userUpdateProfileDto: UserUpdateProfileDto): Promise<UserModal> {
+        let updateRef = await this.userModel.findOne({ username: updatedBy }),
+            reReq = updatedBy;
+
+        if (updateRef.roles.includes(EnumRoles.ROLE_ADMIN)) {
+            if (username) {
+                updateRef = await this.userModel.findOne({ username });
+                reReq = username;
+            }
+        }
+
+        if (!updateRef) {
+            throw new ApplicationException(HttpStatus.NOT_FOUND, MessageCode.USER_NOT_FOUND)
+        }
+        if (updateRef.isDeleted) {
+            throw new ApplicationException(HttpStatus.BAD_REQUEST, MessageCode.USER_IS_DELETED);
+        }
+        if (!updateRef.active) {
+            throw new ApplicationException(HttpStatus.BAD_REQUEST, MessageCode.USER_NOT_ACTIVE);
+        }
+
+        if (userUpdateProfileDto.fullName) updateRef.fullName = userUpdateProfileDto.fullName;
+        if (userUpdateProfileDto.phone) updateRef.phone = userUpdateProfileDto.phone;
+        if (userUpdateProfileDto.address) updateRef.address = userUpdateProfileDto.address;
+        if (userUpdateProfileDto.age) updateRef.age = userUpdateProfileDto.age;
+        if (userUpdateProfileDto.email) updateRef.email = userUpdateProfileDto.email;
+        updateRef.updatedBy = updatedBy;
+
+        await updateRef.save();
+        return await this.findOneByUsername(reReq);
+    }
+
+    async deleteProfile(username: string, updatedBy: string, reason: string) {
+        let deleteRef = await this.userModel.findOne({ username: updatedBy }),
+            reReq = updatedBy;
+
+        if (deleteRef.roles.includes(EnumRoles.ROLE_ADMIN)) {
+            if (username) {
+                deleteRef = await this.userModel.findOne({ username });
+                reReq = username;
+            } else {
+                throw new ApplicationException(HttpStatus.NOT_ACCEPTABLE, MessageCode.ERROR_USER_NOT_HAVE_PERMISSION)
+            }
+        }
+
+        if (!deleteRef) {
+            throw new ApplicationException(HttpStatus.NOT_FOUND, MessageCode.USER_NOT_FOUND)
+        }
+        if (deleteRef.isDeleted) {
+            throw new ApplicationException(HttpStatus.BAD_REQUEST, MessageCode.USER_IS_DELETED);
+        }
+        deleteRef.bannedInfo=[{reason:'',isWaiting:false,createdAt:new Date()}]
+        username === reReq ? deleteRef.isDeleted = true : deleteRef.bannedInfo[0].isWaiting = true;
+        reason ? deleteRef.bannedInfo[0].reason = reason : deleteRef.bannedInfo[0].reason = 'NaN';
+        deleteRef.updatedBy = updatedBy;
+
+        await deleteRef.save();
+        return { statusCode: 200, msg: "Xóa thành công" };
     }
 }

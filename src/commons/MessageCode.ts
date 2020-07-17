@@ -4,6 +4,8 @@ export enum MessageCode {
 	USER_IS_DELETED = 'Tài khoản đã bị khóa',
 	USER_ALREADY_EXISTED = 'Tên người dùng đã tồn tại trong hệ thống',
 	USER_CREATE_OAUTH_ERROR = 'Không thể đăng ký ngay lúc này',
+	USER_ALREADY_BE_ACTIVE = 'Người dùng đã được kích hoạt',
+	USER_NOT_ACTIVE = 'Người dùng chưa được kích hoạt',
 	ERROR_USER_OAUTH_AUTH = 'Tên người dùng hoặc mật khẩu không chính xác',
 	ERROR_USER_NOT_HAVE_PERMISSION = 'Bạn không có quyền truy cập chức năng này',
 	A_SERVICE_UNAVAILABLE = 'Dịch vụ tạm thời không khả dụng, vui lòng thử lại sau',

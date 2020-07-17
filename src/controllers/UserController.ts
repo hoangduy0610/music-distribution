@@ -20,6 +20,7 @@ import { AuthGuard } from '@nestjs/passport';
 import { Roles } from '../guards/RoleDecorator';
 import { EnumRoles } from '../commons/EnumRoles';
 import { UserCreateDto } from '../dtos/UserCreateDto';
+import { UserUpdateProfileDto } from '../dtos/UserUpdateProfileDto';
 
 
 
@@ -41,13 +42,22 @@ export class UserController {
         return res.status(HttpStatus.OK).json(await this.userService.findAll(isDeleted));
     }
 
-    @Get('')
+    @Get('/profile')
     @UseGuards(AuthGuard('jwt'), RolesGuard)
     @ApiBearerAuth()
-    @ApiQuery({ name: 'userId', required: false, type: String, description: 'ID người dùng' })
     @ApiOperation({ summary: 'Lấy profile', description: 'Api lấy profile' })
-    async findOneByUid(@Req() req, @Res() res, @Query('userId') userId: string) {
-        return res.status(HttpStatus.OK).json(await this.userService.findOneByUid(userId, req.user.username));
+    async findProfile(@Req() req, @Res() res) {
+        return res.status(HttpStatus.OK).json(await this.userService.findOneByUsername(req.user.username));
+    }
+
+    @Get('')
+    @UseGuards(AuthGuard('jwt'), RolesGuard)
+    @Roles(EnumRoles.ROLE_ADMIN)
+    @ApiBearerAuth()
+    @ApiQuery({ name: 'username', required: false, type: String, description: 'Username' })
+    @ApiOperation({ summary: 'Lấy profile', description: 'Api lấy profile' })
+    async findOneByUsername(@Req() req, @Res() res, @Query('username') username: string) {
+        return res.status(HttpStatus.OK).json(await this.userService.findOneByUsername(username));
     }
 
     @Post('/create')
@@ -57,5 +67,40 @@ export class UserController {
     @ApiOperation({ summary: 'Tạo người dùng', description: 'Tạo người dùng bởi admin' })
     async create(@Req() req, @Res() res, @Body() userCreateDto: UserCreateDto) {
         return res.status(HttpStatus.OK).json(await this.userService.create(req.user.username, userCreateDto));
+    }
+
+    @Post('/register')
+    @ApiOperation({ summary: 'Đăng ký người dùng', description: 'Tạo người dùng bởi user' })
+    async register(@Req() req, @Res() res, @Body() userCreateDto: UserCreateDto) {
+        return res.status(HttpStatus.OK).json(await this.userService.register(userCreateDto));
+    }
+
+    @Put('/active')
+    @UseGuards(AuthGuard('jwt'), RolesGuard)
+    @Roles(EnumRoles.ROLE_ADMIN)
+    @ApiBearerAuth()
+    @ApiQuery({ name: 'userId', required: false, type: String, description: 'ID người dùng' })
+    @ApiOperation({ summary: 'Kích hoạt người dùng', description: 'Admin kích hoạt người dùng' })
+    async active(@Req() req, @Res() res, @Query('userId') userId: string) {
+        return res.status(HttpStatus.OK).json(await this.userService.active(userId));
+    }
+
+    @Put('')
+    @UseGuards(AuthGuard('jwt'), RolesGuard)
+    @ApiBearerAuth()
+    @ApiQuery({ name: 'username', required: false, type: String, description: 'Username người dùng cần update' })
+    @ApiOperation({ summary: 'Sửa profile', description: 'Api sửa profile' })
+    async update(@Req() req, @Res() res, @Query('username') username: string, @Body() userUpdateProfileDto:UserUpdateProfileDto) {
+        return res.status(HttpStatus.OK).json(await this.userService.updateProfile(username, req.user.username, userUpdateProfileDto));
+    }
+
+    @Delete('')
+    @UseGuards(AuthGuard('jwt'), RolesGuard)
+    @ApiBearerAuth()
+    @ApiQuery({ name: 'username', required: false, type: String, description: 'Username người dùng cần xóa' })
+    @ApiQuery({ name: 'reason', required: false, type: String, description: 'Lý do xóa' })
+    @ApiOperation({ summary: 'Xóa profile', description: 'Api xóa profile' })
+    async delete(@Req() req, @Res() res, @Query('username') username: string, @Query('reason') reason: string) {
+        return res.status(HttpStatus.OK).json(await this.userService.deleteProfile(username, req.user.username, reason));
     }
 }
