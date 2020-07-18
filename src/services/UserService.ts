@@ -20,7 +20,7 @@ export class UserService {
     ) {
     }
     async findAll(isDeleted: string): Promise<UserModal[]> {
-        return await this.userRepository.findAll(isDeleted);
+        return isDeleted ? await this.userRepository.findAll(isDeleted): UserModal.fromUsers(await this.userModel.find({}).exec());
     }
 
     async findOneByUsername(username: string): Promise<UserModal> {
