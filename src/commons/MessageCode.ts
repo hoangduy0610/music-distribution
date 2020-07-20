@@ -10,4 +10,12 @@ export enum MessageCode {
 	ERROR_USER_NOT_HAVE_PERMISSION = 'Bạn không có quyền truy cập chức năng này',
 	A_SERVICE_UNAVAILABLE = 'Dịch vụ tạm thời không khả dụng, vui lòng thử lại sau',
 	INVALID_TOKEN = 'Token không hợp lệ hoặc đã hết hạn',
+	RELEASE_NOT_FOUND = 'Release này không có',
+	RELEASE_IS_DELETED = 'Release đã bị khóa',
+	RELEASE_NOT_ACTIVE = 'Release chưa được xác thực',
+	RELEASE_CONTENT_IS_NULL = 'Thông tin release trống',
+	RELEASE_IS_WAITING = 'Release đang chờ xóa',
+	RELEASE_IS_CREATED='Release ID trùng',
+	BANNED_INFO_IS_NULL = 'Lý do ban chưa có',
+	TRACK_NOT_FOUND='Không tìm thấy track này'
 }

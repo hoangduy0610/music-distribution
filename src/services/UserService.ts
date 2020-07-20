@@ -20,7 +20,7 @@ export class UserService {
     ) {
     }
     async findAll(isDeleted: string): Promise<UserModal[]> {
-        return isDeleted ? await this.userRepository.findAll(isDeleted): UserModal.fromUsers(await this.userModel.find({}).exec());
+        return isDeleted ? await this.userRepository.findAll(isDeleted) : UserModal.fromUsers(await this.userModel.find({}).exec());
     }
 
     async findOneByUsername(username: string): Promise<UserModal> {
@@ -156,12 +156,12 @@ export class UserService {
         if (deleteRef.isDeleted) {
             throw new ApplicationException(HttpStatus.BAD_REQUEST, MessageCode.USER_IS_DELETED);
         }
-        deleteRef.bannedInfo=[{reason:'',isWaiting:false,createdAt:new Date()}]
+        deleteRef.bannedInfo = [{ reason: '', isWaiting: false, createdAt: new Date() }]
         username === reReq ? deleteRef.isDeleted = true : deleteRef.bannedInfo[0].isWaiting = true;
         reason ? deleteRef.bannedInfo[0].reason = reason : deleteRef.bannedInfo[0].reason = 'NaN';
         deleteRef.updatedBy = updatedBy;
 
-        await deleteRef.save();
-        return { statusCode: 200, msg: "Xóa thành công" };
+
+        return new UserModal(await deleteRef.save());
     }
 }
