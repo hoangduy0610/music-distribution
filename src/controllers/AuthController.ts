@@ -18,7 +18,6 @@ export class AuthController {
 
 	@Post('/reset')
 	async reset(@Req() req, @Res() res, @Body() userAuthForgetDto: UserAuthForgetDto) {
-		console.log('callback');
 		return res.status(HttpStatus.OK).json(await this.authService.resetPassphase(userAuthForgetDto));
 	}
 }

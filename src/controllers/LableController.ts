@@ -54,7 +54,7 @@ export class LableController {
     @UseGuards(AuthGuard('jwt'), RolesGuard)
     @ApiBearerAuth()
     @ApiQuery({ name: 'id', required: true, type: String, description: 'Id lable' })
-    @ApiOperation({ summary: 'Sửa mới lable', description: 'Sửa 1 lable' })
+    @ApiOperation({ summary: 'Sửa lable', description: 'Sửa 1 lable' })
     async update(@Req() req, @Res() res, @Query('id') id: string, @Body() lableUpdateDto: LableUpdateDto) {
         return res.status(HttpStatus.OK).json(await this.lableService.update(id, req.user, lableUpdateDto));
     }

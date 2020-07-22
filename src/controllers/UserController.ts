@@ -55,7 +55,7 @@ export class UserController {
     @Roles(EnumRoles.ROLE_ADMIN)
     @ApiBearerAuth()
     @ApiQuery({ name: 'username', required: false, type: String, description: 'Username' })
-    @ApiOperation({ summary: 'Lấy profile', description: 'Api lấy profile' })
+    @ApiOperation({ summary: 'Lấy profile cho Admin', description: 'Api lấy profile dành cho Admin' })
     async findOneByUsername(@Req() req, @Res() res, @Query('username') username: string) {
         return res.status(HttpStatus.OK).json(await this.userService.findOneByUsername(username));
     }

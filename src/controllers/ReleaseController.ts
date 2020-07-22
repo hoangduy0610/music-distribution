@@ -63,7 +63,7 @@ export class ReleaseController {
     @UseGuards(AuthGuard('jwt'), RolesGuard)
     @ApiBearerAuth()
     @ApiQuery({ name: 'releaseId', required: true, type: String, description: 'Release ID' })
-    @ApiOperation({ summary: 'Lấy các track trong release', description: 'Api lấy track trong release' })
+    @ApiOperation({ summary: 'Lấy các track trong draft release', description: 'Api lấy track trong draft release' })
     async findTracksDraft(@Req() req, @Res() res, @Query('releaseId') releaseId: string) {
         return res.status(HttpStatus.OK).json(await this.releaseService.findAllTrackDraft(releaseId, req.user));
     }
