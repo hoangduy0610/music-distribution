@@ -1,16 +1,17 @@
 import { Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
-import { User } from "../interfaces/UserInterface";
+import { Release } from "../interfaces/ReleaseInterface";
 
 @Injectable()
-export class UserRepository {
-    constructor(@InjectModel('User') private readonly userModel: Model<User>
+export class ReleaseRepository {
+    constructor(
+        @InjectModel('Release') private readonly releaseModel: Model<Release>,
     ) {
     }
 
     async findAll(isDeleted: string, active: string): Promise<any[]> {
-        return await this.userModel.aggregate([
+        return await this.releaseModel.aggregate([
             {
                 $match: {
                     isDeleted: isDeleted === 'true', // Đã xóa hay chưa
@@ -20,17 +21,15 @@ export class UserRepository {
         ]);
     }
 
-    async findByUsername(username: string): Promise<any[]> {
-        return await this.userModel.aggregate([
+    async findByOwner(isDeleted: string, active: string, owner: string): Promise<any[]> {
+        return await this.releaseModel.aggregate([
             {
                 $match: {
-                    username,
+                    isDeleted: isDeleted === 'true', // Đã xóa hay chưa
+                    active: active === 'true',
+                    owner
                 },
             },
         ]);
-    }
-
-    async findByUid(userId: string): Promise<any> {
-        return await this.userModel.findById(userId).exec();
     }
 }
