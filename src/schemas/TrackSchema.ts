@@ -1,8 +1,8 @@
 import { Schema } from 'mongoose';
 
 const Artists = new Schema({
-    username: { type: String, /*, enum: ['supplier', 'producer', 'transporter'] */ },
-    role: { type: String },
+    username: { type: String, required: true/*, enum: ['supplier', 'producer', 'transporter'] */ },
+    role: { type: String, required: true, enum: ['performer', 'producer'] },
 }, { _id: false });
 
 export const TrackSchema = new Schema({
@@ -11,7 +11,7 @@ export const TrackSchema = new Schema({
     trackOrder: { type: Number, require: true },
     trackId: { type: String, require: true },
     releaseId: { type: String, require: true },
-    active: { type: Boolean, required: false, default: false },
+    active: { type: Boolean, required: true, default: false },
     versionType: { type: String, require: true, enum: ['Remix', 'Original'] },
     explicit: { type: Boolean, require: true },
     ISRC: { type: String, require: true },
@@ -29,14 +29,14 @@ export const TrackSchema = new Schema({
     createdBy: { type: String, require: true },
     updatedAt: { type: Date, require: false },
     updatedBy: { type: String, require: false },
-    isDeleted: { type: Boolean, require: false, default: false },
+    isDeleted: { type: Boolean, require: true, default: false },
     bannedInfo: {
         type:
         {
             reason: { type: String, required: false },
             isWaiting: { type: Boolean, required: false },
             createdAt: { type: Date, required: false },
-        }, required: false
+        }, required: false, default: { reason: '', isWaiting: false, createdAt: new Date() }
     },
 }, { timestamps: { createdAt: 'createdAt', updatedAt: 'updatedAt' } });
 

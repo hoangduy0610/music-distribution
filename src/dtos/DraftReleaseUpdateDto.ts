@@ -1,10 +1,10 @@
 import { ApiProperty } from '@nestjs/swagger';
 
 class Artists {
-    @ApiProperty({ type: String, description: 'Tên người dùng' })
+    @ApiProperty({ type: String, description: 'Tên người dùng', required: true })
     username: string;
 
-    @ApiProperty({ type: String, description: 'Vai trò' })
+    @ApiProperty({ type: String, description: 'Vai trò', required: true, enum: ['performer', 'producer'] })
     role: string;
 }
 
@@ -21,7 +21,7 @@ export class DraftReleaseUpdateDto {
     @ApiProperty({ type: String, description: 'Thể Loại', required: true })
     readonly genre: string;
 
-    @ApiProperty({ type: String, description: 'UPC', required: true })
+    @ApiProperty({ type: String, description: 'UPC', required: false })
     readonly barcode: string;
 
     @ApiProperty({ type: String, description: 'Credit', required: true })

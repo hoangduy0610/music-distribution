@@ -18,6 +18,6 @@ export const FileSchema = new Schema({
             reason: { type: String, required: false },
             isWaiting: { type: Boolean, required: false },
             createdAt: { type: Date, required: false },
-        }, required: false
+        }, required: false, default: { reason: '', isWaiting: false, createdAt: new Date() }
     },
 }, { timestamps: { createdAt: 'createdAt', updatedAt: 'updatedAt' } });

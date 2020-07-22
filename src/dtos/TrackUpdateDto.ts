@@ -1,10 +1,10 @@
 import { ApiProperty } from '@nestjs/swagger';
 
 class Artists {
-    @ApiProperty({ type: String, description: 'Tên người dùng' })
+    @ApiProperty({ type: String, description: 'Tên người dùng', required: true })
     username: string;
 
-    @ApiProperty({ type: String, description: 'Vai trò' })
+    @ApiProperty({ type: String, description: 'Vai trò', required: true, enum: ['performer', 'producer'] })
     role: string;
 }
 
