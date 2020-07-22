@@ -100,6 +100,14 @@ export class ReleaseService {
         return new ReleaseModal(await releaseUpdate.save());
     }
 
+    async active(releaseId: string, updatedBy: string): Promise<ReleaseModal> {
+        const release = await this.releaseModel.findOne({ releaseId }).exec();
+        release.active = true;
+        release.status = 'Released';
+        release.updatedBy = updatedBy;
+        return new ReleaseModal(await release.save());
+    }
+
     async delete(releaseId: string, user: User, bannedInfoDto: BannedInfoDto): Promise<ReleaseModal> {
         const deleteRef = await this.releaseModel.findOne({ releaseId }).exec(),
             roles = user.roles,

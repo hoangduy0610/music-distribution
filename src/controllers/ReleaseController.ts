@@ -95,6 +95,16 @@ export class ReleaseController {
         return res.status(HttpStatus.OK).json(await this.releaseService.update(releaseId, req.user, releaseUpdateDto));
     }
 
+    @Put('/active')
+    @UseGuards(AuthGuard('jwt'), RolesGuard)
+    @ApiBearerAuth()
+    @Roles(EnumRoles.ROLE_ADMIN)
+    @ApiQuery({ name: 'releaseId', required: true, type: String, description: 'Release ID' })
+    @ApiOperation({ summary: 'Active release', description: 'Kích hoạt release' })
+    async active(@Req() req, @Res() res, @Query('releaseId') releaseId: string) {
+        return res.status(HttpStatus.OK).json(await this.releaseService.active(releaseId, req.user.username));
+    }
+
     @Put('/draft')
     @UseGuards(AuthGuard('jwt'), RolesGuard)
     @ApiBearerAuth()
