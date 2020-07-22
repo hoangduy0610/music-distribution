@@ -17,5 +17,6 @@ export enum MessageCode {
 	RELEASE_IS_WAITING = 'Release đang chờ xóa',
 	RELEASE_IS_CREATED='Release ID trùng',
 	BANNED_INFO_IS_NULL = 'Lý do ban chưa có',
-	TRACK_NOT_FOUND='Không tìm thấy track này'
+	TRACK_NOT_FOUND='Không tìm thấy track này',
+	FILE_CANNOT_UPLOAD='Không upload file được'
 }

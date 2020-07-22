@@ -32,6 +32,8 @@
 
 ```bash
 $ npm install
+Go to node_modules/@nestjs/swagger/dist/decorators/index.d.ts and add $export * from './api-implicit-file.decorator';
+Go to node_modules/@nestjs/swagger/dist/decorators/index.js and add __exportStar(require("./api-implicit-file.decorator"), exports);
 ```
 
 ## Running the app

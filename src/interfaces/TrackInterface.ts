@@ -14,7 +14,7 @@ export interface Track extends Document {
     releaseId: string;
     active: boolean;
     versionType: string;
-    explicit: string;
+    explicit: boolean;
     ISRC: string;
     artist: Artists[],
     publisher: string;
@@ -43,7 +43,7 @@ export interface DraftTrack extends Document {
     trackId: string;
     releaseId: string;
     versionType: string;
-    explicit: string;
+    explicit: boolean;
     ISRC: string;
     artist: Artists[],
     publisher: string;

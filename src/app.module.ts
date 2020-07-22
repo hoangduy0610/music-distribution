@@ -4,6 +4,7 @@ import { AuthModule } from './modules/AuthModule';
 import { UserModule } from './modules/UserModule';
 import { ConfigModule } from '@nestjs/config';
 import { ReleaseModule } from './modules/ReleaseModule';
+import { TrackModule } from './modules/TrackModule';
 
 require('dotenv').config();
 
@@ -11,8 +12,8 @@ require('dotenv').config();
     imports: [
         //File môi trường: dev-local    test-server test    prod-production
         ConfigModule.forRoot({
-            envFilePath: ['.env.dev', '.env.test','.env.prod'],
-            isGlobal:true,
+            envFilePath: ['.env.dev', '.env.test', '.env.prod'],
+            isGlobal: true,
         }),
         MongooseModule.forRoot(process.env.DATABASE_HOST, {
             useNewUrlParser: true,
@@ -20,7 +21,8 @@ require('dotenv').config();
         }),
         AuthModule,
         UserModule,
-        ReleaseModule
+        ReleaseModule,
+        TrackModule
     ],
 })
 export class AppModule {

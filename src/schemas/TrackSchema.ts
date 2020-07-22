@@ -12,8 +12,8 @@ export const TrackSchema = new Schema({
     trackId: { type: String, require: true },
     releaseId: { type: String, require: true },
     active: { type: Boolean, required: false, default: false },
-    versionType: { type: String, require: true },
-    explicit: { type: String, require: true },
+    versionType: { type: String, require: true, enum: ['Remix', 'Original'] },
+    explicit: { type: Boolean, require: true },
     ISRC: { type: String, require: true },
     artist: {
         type: [Artists],
@@ -46,8 +46,8 @@ export const DraftTrackSchema = new Schema({
     trackOrder: { type: Number, require: false },
     trackId: { type: String, require: false },
     releaseId: { type: String, require: false },
-    versionType: { type: String, require: false },
-    explicit: { type: String, require: false },
+    versionType: { type: String, require: false, enum: ['Remix', 'Original'] },
+    explicit: { type: Boolean, require: false },
     ISRC: { type: String, require: false },
     artist: {
         type: [Artists],
