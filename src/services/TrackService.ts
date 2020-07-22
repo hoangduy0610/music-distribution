@@ -79,7 +79,7 @@ export class TrackService {
         return new TrackModal(await track.save());
     }
 
-    async upload(user: User, files: any): Promise<TrackModal> {
+    async upload(user: User, releaseId: string, files: any): Promise<TrackModal> {
         if (!files || files.empty) {
             throw new ApplicationException(HttpStatus.BAD_REQUEST, "Không tìm thấy hình ảnh gửi lên")
         }
@@ -92,6 +92,7 @@ export class TrackService {
         if (!upload) throw new ApplicationException(HttpStatus.SERVICE_UNAVAILABLE, MessageCode.FILE_CANNOT_UPLOAD)
         const track = new this.trackModel();
         track.trackId = trackId;
+        track.releaseId = releaseId;
         track.owner = user.username;
         track.createdBy = user.username;
         track.bannedInfo = { reason: '', isWaiting: false, createdAt: new Date() };
@@ -99,7 +100,7 @@ export class TrackService {
         return new TrackModal(await track.save())
     }
 
-    async delete(trackId: string, user: User, bannedInfoDto: BannedInfoDto):Promise<TrackModal> {
+    async delete(trackId: string, user: User, bannedInfoDto: BannedInfoDto): Promise<TrackModal> {
         const deleteRef = await this.trackModel.findOne({ trackId }).exec(),
             roles = user.roles,
             username = user.username;

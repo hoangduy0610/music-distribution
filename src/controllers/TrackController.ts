@@ -47,6 +47,7 @@ export class TrackController {
     @Post('')
     @UseGuards(AuthGuard('jwt'), RolesGuard)
     @ApiBearerAuth()
+    @ApiQuery({ name: 'releaseId', required: true, type: String, description: 'Release ID' })
     @ApiConsumes('multipart/form-data')
     @UseInterceptors(FilesInterceptor('files', 20, {
         storage: myStorage,
@@ -57,8 +58,8 @@ export class TrackController {
         type: FileUploadDto,
     })
     @ApiOperation({ summary: 'Thêm', description: 'Thêm track' })
-    async upload(@Req() req, @Res() res, @UploadedFiles() files) {
-        return res.status(HttpStatus.OK).json(await this.trackService.upload(req.user, files));
+    async upload(@Req() req, @Res() res, @Query('releaseId') releaseId: string, @UploadedFiles() files) {
+        return res.status(HttpStatus.OK).json(await this.trackService.upload(req.user, releaseId, files));
     }
 
     @Put('')
