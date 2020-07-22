@@ -19,8 +19,14 @@ export class UserService {
         private readonly oAuthService: OAuthService,
     ) {
     }
-    async findAll(isDeleted: string): Promise<UserModal[]> {
-        return isDeleted ? await this.userRepository.findAll(isDeleted) : UserModal.fromUsers(await this.userModel.find({}).exec());
+    async findAll(isDeleted: string, active: string): Promise<UserModal[]> {
+        return isDeleted
+            ? (active
+                ? await this.userRepository.findAll(isDeleted, active)
+                : UserModal.fromUsers(await this.userModel.find({ isDeleted: isDeleted === 'true' }).exec()))
+            : (active
+                ? UserModal.fromUsers(await this.userModel.find({ active: active === 'true' }).exec())
+                : UserModal.fromUsers(await this.userModel.find({}).exec()));
     }
 
     async findOneByUsername(username: string): Promise<UserModal> {

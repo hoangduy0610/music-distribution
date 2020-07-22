@@ -9,11 +9,12 @@ export class UserRepository {
     ) {
     }
 
-    async findAll(isDeleted: string): Promise<any[]> {
+    async findAll(isDeleted: string, active: string): Promise<any[]> {
         return await this.userModel.aggregate([
             {
                 $match: {
                     isDeleted: isDeleted === 'true', // Đã xóa hay chưa
+                    active: active === 'true',
                 },
             },
         ]);

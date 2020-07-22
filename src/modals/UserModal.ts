@@ -11,12 +11,17 @@ export class UserModal {
     updatedAt: Date;
     updatedBy: string;
     address: string;
-    age:string;
-    email:string;
+    age: string;
+    email: string;
     roles: string[];
     phone: string;
     avatar: string;
-    isDeleted:boolean;
+    isDeleted: boolean;
+    bannedInfo: [{
+        reason: string,
+        isWaiting: boolean,
+        createdAt: Date,
+    }];
     constructor(user: User) {
         this.id = user._id;
         this.username = user.username;
@@ -33,6 +38,7 @@ export class UserModal {
         this.email = user.email;
         this.avatar = user.avatar;
         this.isDeleted = user.isDeleted;
+        this.bannedInfo = user.bannedInfo;
     }
 
     public static fromUsers(users: User[]) {

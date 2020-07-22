@@ -39,8 +39,8 @@ export class UserController {
     @ApiQuery({ name: 'isDeleted', required: false, type: String, description: 'Đã xóa/chưa xóa', enum: ['true', 'false'] })
     @ApiQuery({ name: 'active', required: false, type: String, description: 'Trạng thái kích hoạt', enum: ['true', 'false'] })
     @ApiOperation({ summary: 'Lấy danh sách người dùng', description: 'Api lấy danh sách người dùng' })
-    async findAll(@Req() req, @Res() res, @Query('isDeleted') isDeleted: string) {
-        return res.status(HttpStatus.OK).json(await this.userService.findAll(isDeleted));
+    async findAll(@Req() req, @Res() res, @Query('isDeleted') isDeleted: string, @Query('active') active: string) {
+        return res.status(HttpStatus.OK).json(await this.userService.findAll(isDeleted, active));
     }
 
     @Get('/profile')

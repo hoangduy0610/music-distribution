@@ -55,7 +55,7 @@ export class ReleaseController {
     @UseGuards(AuthGuard('jwt'), RolesGuard)
     @ApiBearerAuth()
     @ApiOperation({ summary: 'Lấy danh sách draft', description: 'Api lấy danh sách draft' })
-    async findAllDraft(@Req() req, @Res() res, @Query('isDeleted') isDeleted: string) {
+    async findAllDraft(@Req() req, @Res() res) {
         return res.status(HttpStatus.OK).json(await this.releaseService.findAllDraft(req.user));
     }
 

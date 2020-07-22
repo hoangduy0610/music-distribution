@@ -10,21 +10,14 @@ export class DraftReleaseRepository {
     ) {
     }
 
-    async findAll(isDeleted: string): Promise<any[]> {
-        return await this.draftReleaseModel.aggregate([
-            {
-                $match: {
-                    isDeleted: isDeleted === 'true', // Đã xóa hay chưa
-                },
-            },
-        ]);
+    async findAll(): Promise<any[]> {
+        return await this.draftReleaseModel.find({}).exec();
     }
 
-    async findByOwner(isDeleted: string, owner: string):Promise<any[]> {
+    async findByOwner(owner: string):Promise<any[]> {
         return await this.draftReleaseModel.aggregate([
             {
                 $match: {
-                    isDeleted: isDeleted === 'true', // Đã xóa hay chưa
                     owner
                 },
             },

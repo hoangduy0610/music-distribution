@@ -30,14 +30,31 @@ export class ReleaseService {
     async findAll(isDeleted: string, active: string, user: User): Promise<ReleaseModal[]> {
         const roles = user.roles,
             owner = user.username;
-        if (roles.includes(EnumRoles.ROLE_ADMIN)) return isDeleted ? await this.releaseRepository.findAll(isDeleted, active) : ReleaseModal.fromReleases(await this.releaseModel.find({ isDeleted: isDeleted === 'true', active: active === 'true' }).exec());
-        else return isDeleted ? await this.releaseRepository.findByOwner(isDeleted, active, owner) : ReleaseModal.fromReleases(await this.releaseModel.find({ owner, isDeleted: isDeleted === 'true', active: active === 'true' }).exec());
+        if (roles.includes(EnumRoles.ROLE_ADMIN))
+            if (isDeleted && active)
+                return await this.releaseRepository.findAll(isDeleted, active)
+            else if (active)
+                return ReleaseModal.fromReleases(await this.releaseModel.find({ active: active === 'true' }).exec());
+            else if (isDeleted)
+                return ReleaseModal.fromReleases(await this.releaseModel.find({ isDeleted: isDeleted === 'true' }).exec());
+            else
+                return ReleaseModal.fromReleases(await this.releaseModel.find({}).exec());
+
+        else
+            if (isDeleted)
+                return await this.releaseRepository.findByOwner(isDeleted, active, owner)
+            else if (active)
+                return ReleaseModal.fromReleases(await this.releaseModel.find({ owner, active: active === 'true' }).exec());
+            else if (isDeleted)
+                return ReleaseModal.fromReleases(await this.releaseModel.find({ owner, isDeleted: isDeleted === 'true' }).exec());
+            else
+                return ReleaseModal.fromReleases(await this.releaseModel.find({ owner }).exec());
     }
 
     async findAllDraft(user: User): Promise<DraftReleaseModal[]> {
         const roles = user.roles,
             owner = user.username;
-        if (roles.includes(EnumRoles.ROLE_ADMIN)) DraftReleaseModal.fromReleases(await this.draftReleaseModel.find({}).exec());
+        if (roles.includes(EnumRoles.ROLE_ADMIN)) return DraftReleaseModal.fromReleases(await this.draftReleaseModel.find({}).exec());
         else return DraftReleaseModal.fromReleases(await this.draftReleaseModel.find({ owner }).exec());
     }
 
