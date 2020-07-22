@@ -18,6 +18,7 @@ export class TrackModal {
     id: string;
     owner: string;
     name: string;
+    path: string;
     trackOrder: number;
     trackId: string;
     releaseId: string;
@@ -46,6 +47,7 @@ export class TrackModal {
         this.id = track._id;
         this.owner = track.owner;
         this.name = track.name;
+        this.path = track.path;
         this.trackOrder = track.trackOrder;
         this.trackId = track.trackId;
         this.releaseId = track.releaseId;
@@ -78,6 +80,7 @@ export class DraftTrackModal {
     id: string;
     owner: string;
     name: string;
+    path: string;
     trackOrder: number;
     trackId: string;
     releaseId: string;
@@ -99,6 +102,7 @@ export class DraftTrackModal {
         this.id = track._id;
         this.owner = track.owner;
         this.name = track.name;
+        this.path = track.path;
         this.trackOrder = track.trackOrder;
         this.trackId = track.trackId;
         this.releaseId = track.releaseId;

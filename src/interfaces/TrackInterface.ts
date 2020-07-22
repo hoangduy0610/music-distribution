@@ -1,4 +1,4 @@
-import {Document} from 'mongoose';
+import { Document } from 'mongoose';
 
 export interface Artists {
     username: string,
@@ -9,7 +9,8 @@ export interface Track extends Document {
     _id: string;
     owner: string;
     name: string;
-    trackOrder:number;
+    path: string;
+    trackOrder: number;
     trackId: string;
     releaseId: string;
     active: boolean;
@@ -20,7 +21,7 @@ export interface Track extends Document {
     publisher: string;
     language: string;
     credit: string;
-    isOwner:Boolean;
+    isOwner: Boolean;
     isBundle: Boolean;
     isFirstRelease: Boolean;
     createdAt: Date;
@@ -39,7 +40,8 @@ export interface DraftTrack extends Document {
     _id: string;
     owner: string;
     name: string;
-    trackOrder:number;
+    path: string;
+    trackOrder: number;
     trackId: string;
     releaseId: string;
     versionType: string;
@@ -49,7 +51,7 @@ export interface DraftTrack extends Document {
     publisher: string;
     language: string;
     credit: string;
-    isOwner:Boolean;
+    isOwner: Boolean;
     isBundle: Boolean;
     isFirstRelease: Boolean;
     createdAt: Date;

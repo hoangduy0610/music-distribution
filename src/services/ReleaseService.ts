@@ -27,18 +27,18 @@ export class ReleaseService {
     ) {
     }
 
-    async findAll(isDeleted: string, user: User): Promise<ReleaseModal[]> {
+    async findAll(isDeleted: string, active: string, user: User): Promise<ReleaseModal[]> {
         const roles = user.roles,
             owner = user.username;
-        if (roles.includes(EnumRoles.ROLE_ADMIN)) return isDeleted ? await this.releaseRepository.findAll(isDeleted) : ReleaseModal.fromReleases(await this.releaseModel.find({}).exec());
-        else return isDeleted ? await this.releaseRepository.findByOwner(isDeleted, owner) : ReleaseModal.fromReleases(await this.releaseModel.find({ owner }).exec());
+        if (roles.includes(EnumRoles.ROLE_ADMIN)) return isDeleted ? await this.releaseRepository.findAll(isDeleted, active) : ReleaseModal.fromReleases(await this.releaseModel.find({ isDeleted: isDeleted === 'true', active: active === 'true' }).exec());
+        else return isDeleted ? await this.releaseRepository.findByOwner(isDeleted, active, owner) : ReleaseModal.fromReleases(await this.releaseModel.find({ owner, isDeleted: isDeleted === 'true', active: active === 'true' }).exec());
     }
 
-    async findAllDraft(isDeleted: string, user: User): Promise<ReleaseModal[]> {
+    async findAllDraft(user: User): Promise<DraftReleaseModal[]> {
         const roles = user.roles,
             owner = user.username;
-        if (roles.includes(EnumRoles.ROLE_ADMIN)) return isDeleted ? await this.draftReleaseRepository.findAll(isDeleted) : DraftReleaseModal.fromReleases(await this.draftReleaseModel.find({}).exec());
-        else return isDeleted ? await this.draftReleaseRepository.findByOwner(isDeleted, owner) : DraftReleaseModal.fromReleases(await this.draftReleaseModel.find({ owner }).exec());
+        if (roles.includes(EnumRoles.ROLE_ADMIN)) DraftReleaseModal.fromReleases(await this.draftReleaseModel.find({}).exec());
+        else return DraftReleaseModal.fromReleases(await this.draftReleaseModel.find({ owner }).exec());
     }
 
     async findOneByReleaseId(releaseId: string, user: User): Promise<ReleaseModal> {

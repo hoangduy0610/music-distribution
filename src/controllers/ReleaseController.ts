@@ -44,19 +44,19 @@ export class ReleaseController {
     @Get('/list')
     @UseGuards(AuthGuard('jwt'), RolesGuard)
     @ApiBearerAuth()
-    @ApiQuery({ name: 'isDeleted', required: false, type: String, description: 'Trạng thái kích hoạt', enum: ['true', 'false'] })
+    @ApiQuery({ name: 'isDeleted', required: false, type: String, description: 'Đã xóa/chưa xóa', enum: ['true', 'false'] })
+    @ApiQuery({ name: 'active', required: false, type: String, description: 'Trạng thái kích hoạt', enum: ['true', 'false'] })
     @ApiOperation({ summary: 'Lấy danh sách release', description: 'Api lấy danh sách release' })
-    async findAll(@Req() req, @Res() res, @Query('isDeleted') isDeleted: string) {
-        return res.status(HttpStatus.OK).json(await this.releaseService.findAll(isDeleted, req.user));
+    async findAll(@Req() req, @Res() res, @Query('isDeleted') isDeleted: string, @Query('active') active: string) {
+        return res.status(HttpStatus.OK).json(await this.releaseService.findAll(isDeleted, active, req.user));
     }
 
     @Get('/draft/list')
     @UseGuards(AuthGuard('jwt'), RolesGuard)
     @ApiBearerAuth()
-    @ApiQuery({ name: 'isDeleted', required: false, type: String, description: 'Trạng thái kích hoạt', enum: ['true', 'false'] })
     @ApiOperation({ summary: 'Lấy danh sách draft', description: 'Api lấy danh sách draft' })
     async findAllDraft(@Req() req, @Res() res, @Query('isDeleted') isDeleted: string) {
-        return res.status(HttpStatus.OK).json(await this.releaseService.findAllDraft(isDeleted, req.user));
+        return res.status(HttpStatus.OK).json(await this.releaseService.findAllDraft(req.user));
     }
 
     @Get('/draft/tracks')

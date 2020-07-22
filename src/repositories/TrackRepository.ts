@@ -23,7 +23,35 @@ export class TrackRepository {
                 $sort: {
                     trackOrder: 1
                 }
-            }
+            },
+            {
+                $lookup: {
+                    from: 'files',
+                    let: { useForId: "$trackId" },
+                    pipeline: [
+                        {
+                            $match:
+                            {
+                                $expr:
+                                {
+                                    $and:
+                                        [
+                                            { $eq: ["$useForId", "$$useForId"] },
+                                            { $eq: ["$type", "track"] }
+                                        ]
+                                }
+                            }
+                        },
+                    ],
+                    as: 'track'
+                },
+            },
+            {
+                $addFields: {
+                    path: { $arrayElemAt: ['$track.internalPath', 0] },
+                    //productId: '$productIdString'
+                }
+            },
         ]);
     }
 }

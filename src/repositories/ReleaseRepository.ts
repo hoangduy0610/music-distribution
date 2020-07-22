@@ -10,21 +10,23 @@ export class ReleaseRepository {
     ) {
     }
 
-    async findAll(isDeleted: string): Promise<any[]> {
+    async findAll(isDeleted: string, active: string): Promise<any[]> {
         return await this.releaseModel.aggregate([
             {
                 $match: {
                     isDeleted: isDeleted === 'true', // Đã xóa hay chưa
+                    active: active === 'true',
                 },
             },
         ]);
     }
 
-    async findByOwner(isDeleted: string, owner: string): Promise<any[]> {
+    async findByOwner(isDeleted: string, active: string, owner: string): Promise<any[]> {
         return await this.releaseModel.aggregate([
             {
                 $match: {
                     isDeleted: isDeleted === 'true', // Đã xóa hay chưa
+                    active: active === 'true',
                     owner
                 },
             },
