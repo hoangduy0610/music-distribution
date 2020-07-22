@@ -136,6 +136,7 @@ export class ReleaseService {
             deleteRef.isDeleted = true;
             deleteRef.bannedInfo.isWaiting = false;
         }
+        deleteRef.updatedBy = user.username;
 
         return new ReleaseModal(await deleteRef.save());
     }
@@ -173,6 +174,7 @@ export class ReleaseService {
         news.createdAt = new Date();
         news.releaseId = releaseId;
         news.owner = user.username;
+        news.createdBy = user.username;
 
         return new DraftReleaseModal(await news.save());
     }
@@ -198,6 +200,7 @@ export class ReleaseService {
         if (releaseUpdateDto.shops) releaseUpdate.shops = releaseUpdateDto.shops;
         if (releaseUpdateDto.title) releaseUpdate.title = releaseUpdateDto.title;
         if (releaseUpdateDto.catalogNo) releaseUpdate.catalogNo = releaseUpdateDto.catalogNo;
+        releaseUpdate.updatedBy = user.username;
 
         return new DraftReleaseModal(await releaseUpdate.save());
     }
@@ -245,6 +248,7 @@ export class ReleaseService {
         if (release.catalogNo) news.catalogNo = release.catalogNo;
         news.createdAt = new Date();
         news.status = "Pending";
+        news.createdBy = user.username;
         news.bannedInfo = { reason: '', isWaiting: false, createdAt: new Date() };
 
         return new ReleaseModal(await news.save())

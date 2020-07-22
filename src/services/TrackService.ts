@@ -44,6 +44,8 @@ export class TrackService {
             track.trackOrder = order;
         }
 
+        track.updatedBy = user.username;
+
         return new TrackModal(await track.save());
     }
 
@@ -72,6 +74,7 @@ export class TrackService {
         if (trackUpdateDto.name) track.name = trackUpdateDto.name;
         if (trackUpdateDto.publisher) track.publisher = trackUpdateDto.publisher;
         if (trackUpdateDto.versionType) track.versionType = trackUpdateDto.versionType;
+        track.updatedBy = user.username;
 
         return new TrackModal(await track.save());
     }
@@ -90,6 +93,7 @@ export class TrackService {
         const track = new this.trackModel();
         track.trackId = trackId;
         track.owner = user.username;
+        track.createdBy = user.username;
         track.bannedInfo = { reason: '', isWaiting: false, createdAt: new Date() };
 
         return new TrackModal(await track.save())

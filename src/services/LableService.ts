@@ -56,6 +56,8 @@ export class LableService {
             if (roles.includes(EnumRoles.ROLE_ADMIN)) lable.owner = lableUpdateDto.owner;
             else throw new ApplicationException(HttpStatus.FORBIDDEN, MessageCode.ERROR_USER_NOT_HAVE_PERMISSION)
 
+        lable.updatedBy = owner;
+
         return new LableModal(await lable.save());
     }
 
@@ -95,6 +97,8 @@ export class LableService {
             deleteRef.isDeleted = true;
             deleteRef.bannedInfo.isWaiting = false;
         }
+
+        deleteRef.updatedBy = user.username;
 
         return new LableModal(await deleteRef.save());
     }

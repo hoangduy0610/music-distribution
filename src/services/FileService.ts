@@ -31,7 +31,7 @@ export class FileService {
                 const fileName = IdUtil.generateId(8) + '_' + IdUtil.generateId(8) /*Date.now()*/;
                 const internalPath = process.env.DESTINATION_TO_RENDER + `${type}/${id}/${imageType}/${fileName}.${extension}`;
                 const localPath = process.env.DESTINATION_SAVE_FILE + `${type}${process.env.SLASH_SYSTEM}${id}${process.env.SLASH_SYSTEM}${imageType}${process.env.SLASH_SYSTEM}${fileName}.${extension}`
-                
+
                 if (type === FileStorageEnum.IMAGES) {
                     const saveFile = await jimp.read(pathToFile);
                     await saveFile
@@ -61,6 +61,7 @@ export class FileService {
                     extension: extension,
                     type: type,
                     createdAt: Math.round(new Date().getTime() / 1000),
+                    createdBy: user.username
                 });
                 saveFiles.push(saved);
                 // console.log(saveFiles);
