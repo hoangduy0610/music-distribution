@@ -10,7 +10,7 @@ export class ReleaseRepository {
     ) {
     }
 
-    async findAll(isDeleted: string): Promise<any> {
+    async findAll(isDeleted: string): Promise<any[]> {
         return await this.releaseModel.aggregate([
             {
                 $match: {
@@ -20,7 +20,7 @@ export class ReleaseRepository {
         ]);
     }
 
-    async findByOwner(isDeleted: string, owner: string) {
+    async findByOwner(isDeleted: string, owner: string): Promise<any[]> {
         return await this.releaseModel.aggregate([
             {
                 $match: {

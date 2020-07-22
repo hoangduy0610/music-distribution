@@ -6,10 +6,11 @@ import { Lable } from "../interfaces/LableInterface";
 @Injectable()
 export class LableRepository {
     constructor(
-        @InjectModel('Lable') private readonly lableModel: Model<Lable>) {
+        @InjectModel('Lable') private readonly lableModel: Model<Lable>
+    ) {
     }
 
-    async findAll(isDeleted: string): Promise<any> {
+    async findAll(isDeleted: string): Promise<any[]> {
         return await this.lableModel.aggregate([
             {
                 $match: {
@@ -19,7 +20,7 @@ export class LableRepository {
         ]);
     }
 
-    async findByOwner(isDeleted: string, owner: string) {
+    async findByOwner(isDeleted: string, owner: string): Promise<any[]> {
         return await this.lableModel.aggregate([
             {
                 $match: {

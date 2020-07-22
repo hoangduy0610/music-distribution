@@ -14,11 +14,11 @@ export class FileRepository {
     ) {
     }
 
-    async getFileDetails(useForId: string, fileName: string) {
+    async getFileDetails(useForId: string, fileName: string): Promise<any>{
         return await this.fileModel.findOne({ useForId: useForId, name: fileName.split(".")[0] }).exec()
     }
 
-    async getFileDetailsById(useForId: string) {
+    async getFileDetailsById(useForId: string): Promise<any>{
         return await this.fileModel.findOne({ useForId: useForId }).exec()
     }
 

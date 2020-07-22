@@ -99,7 +99,7 @@ export class TrackService {
         return new TrackModal(await track.save())
     }
 
-    async delete(trackId: string, user: User, bannedInfoDto: BannedInfoDto) {
+    async delete(trackId: string, user: User, bannedInfoDto: BannedInfoDto):Promise<TrackModal> {
         const deleteRef = await this.trackModel.findOne({ trackId }).exec(),
             roles = user.roles,
             username = user.username;

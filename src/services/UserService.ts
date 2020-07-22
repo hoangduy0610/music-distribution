@@ -137,7 +137,7 @@ export class UserService {
         return await this.findOneByUsername(reReq);
     }
 
-    async deleteProfile(username: string, updatedBy: string, reason: string) {
+    async deleteProfile(username: string, updatedBy: string, reason: string): Promise<UserModal> {
         let deleteRef = await this.userModel.findOne({ username: updatedBy }),
             reReq = updatedBy;
 

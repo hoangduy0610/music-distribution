@@ -61,7 +61,7 @@ export class LableService {
         return new LableModal(await lable.save());
     }
 
-    async delete(id: string, user: User, bannedInfoDto: BannedInfoDto) {
+    async delete(id: string, user: User, bannedInfoDto: BannedInfoDto):Promise<LableModal> {
         const deleteRef = await this.lableModel.findOne({ _id: id }).exec(),
             roles = user.roles,
             username = user.username;
