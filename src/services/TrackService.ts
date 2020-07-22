@@ -49,7 +49,7 @@ export class TrackService {
 
     async update(trackId: string, user: User, trackUpdateDto: TrackUpdateDto): Promise<TrackModal> {
         if (!trackId) {
-            throw new ApplicationException(HttpStatus.NOT_FOUND, MessageCode.RELEASE_NOT_FOUND)
+            throw new ApplicationException(HttpStatus.NOT_FOUND, MessageCode.TRACK_NOT_FOUND)
         }
         const track: Track = await this.trackModel.findOne({ trackId }).exec();
         if (!track) {
@@ -101,11 +101,11 @@ export class TrackService {
             username = user.username;
 
         if (!deleteRef) {
-            throw new ApplicationException(HttpStatus.BAD_REQUEST, MessageCode.RELEASE_NOT_FOUND)
+            throw new ApplicationException(HttpStatus.BAD_REQUEST, MessageCode.TRACK_NOT_FOUND)
         }
 
         if (deleteRef.isDeleted) {
-            throw new ApplicationException(HttpStatus.BAD_REQUEST, MessageCode.RELEASE_IS_DELETED)
+            throw new ApplicationException(HttpStatus.BAD_REQUEST, MessageCode.TRACK_IS_DELETED)
         }
 
         if (!bannedInfoDto.reason) {
@@ -118,7 +118,7 @@ export class TrackService {
             }
 
             if (deleteRef.bannedInfo.isWaiting) {
-                throw new ApplicationException(HttpStatus.BAD_REQUEST, MessageCode.RELEASE_IS_WAITING)
+                throw new ApplicationException(HttpStatus.BAD_REQUEST, MessageCode.TRACK_IS_WAITING)
             }
 
             deleteRef.bannedInfo.isWaiting = true;

@@ -15,8 +15,14 @@ export enum MessageCode {
 	RELEASE_NOT_ACTIVE = 'Release chưa được xác thực',
 	RELEASE_CONTENT_IS_NULL = 'Thông tin release trống',
 	RELEASE_IS_WAITING = 'Release đang chờ xóa',
-	RELEASE_IS_CREATED='Release ID trùng',
+	RELEASE_IS_CREATED = 'Release ID trùng',
 	BANNED_INFO_IS_NULL = 'Lý do ban chưa có',
-	TRACK_NOT_FOUND='Không tìm thấy track này',
-	FILE_CANNOT_UPLOAD='Không upload file được'
+	TRACK_NOT_FOUND = 'Không tìm thấy track này',
+	TRACK_IS_WAITING = 'Track đang chờ xóa',
+	TRACK_IS_DELETED = 'Track đã bị xóa',
+	FILE_CANNOT_UPLOAD = 'Không upload file được',
+	LABLE_NAME_IS_NULL = 'Tên lable không được để trông',
+	LABLE_NOT_FOUND = 'Không tìm thấy lable này',
+	LABLE_IS_WAITING = 'Lable đang chờ xóa',
+	LABLE_IS_DELETED = 'Lable đã bị xóa',
 }

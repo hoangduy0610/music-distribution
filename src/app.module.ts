@@ -5,6 +5,7 @@ import { UserModule } from './modules/UserModule';
 import { ConfigModule } from '@nestjs/config';
 import { ReleaseModule } from './modules/ReleaseModule';
 import { TrackModule } from './modules/TrackModule';
+import { LableModule } from './modules/LableModule';
 
 require('dotenv').config();
 
@@ -22,7 +23,8 @@ require('dotenv').config();
         AuthModule,
         UserModule,
         ReleaseModule,
-        TrackModule
+        TrackModule,
+        LableModule
     ],
 })
 export class AppModule {
