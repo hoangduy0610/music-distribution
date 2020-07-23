@@ -51,6 +51,7 @@ export class LableService {
         if (lableUpdateDto.active)
             if (roles.includes(EnumRoles.ROLE_ADMIN)) lable.active = lableUpdateDto.active;
             else throw new ApplicationException(HttpStatus.FORBIDDEN, MessageCode.ERROR_USER_NOT_HAVE_PERMISSION)
+        else lable.active = false;
         if (lableUpdateDto.name) lable.name = lableUpdateDto.name;
         if (lableUpdateDto.owner)
             if (roles.includes(EnumRoles.ROLE_ADMIN)) lable.owner = lableUpdateDto.owner;
@@ -61,7 +62,7 @@ export class LableService {
         return new LableModal(await lable.save());
     }
 
-    async delete(id: string, user: User, bannedInfoDto: BannedInfoDto):Promise<LableModal> {
+    async delete(id: string, user: User, bannedInfoDto: BannedInfoDto): Promise<LableModal> {
         const deleteRef = await this.lableModel.findOne({ _id: id }).exec(),
             roles = user.roles,
             username = user.username;

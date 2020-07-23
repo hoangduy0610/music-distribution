@@ -61,7 +61,7 @@ export class ReleaseService {
     async findOneByReleaseId(releaseId: string, user: User): Promise<ReleaseModal> {
         const release = await this.releaseModel.findOne({ releaseId });
 
-        if (!releaseId) {
+        if (!releaseId || !release) {
             throw new ApplicationException(HttpStatus.BAD_REQUEST, MessageCode.RELEASE_NOT_FOUND);
         }
 
@@ -162,6 +162,7 @@ export class ReleaseService {
             deleteRef.bannedInfo.isWaiting = false;
         }
         deleteRef.updatedBy = user.username;
+        await this.trackService.deleteTracksByReleaseId(releaseId, bannedInfoDto, user);
 
         return new ReleaseModal(await deleteRef.save());
     }
@@ -246,6 +247,7 @@ export class ReleaseService {
         }
 
         const res = await this.draftReleaseModel.deleteOne({ releaseId });
+        await this.trackService.deleteTracksByReleaseId(releaseId, { reason: "Draft" }, user);
         if (res.deletedCount) return { statusCode: 200, msg: "Deleted" }
 
         throw new ApplicationException(HttpStatus.NOT_FOUND, MessageCode.RELEASE_NOT_FOUND)
@@ -275,6 +277,7 @@ export class ReleaseService {
         news.status = "Pending";
         news.createdBy = user.username;
         news.bannedInfo = { reason: '', isWaiting: false, createdAt: new Date() };
+        await this.draftReleaseModel.deleteOne({ releaseId });
 
         return new ReleaseModal(await news.save())
     }

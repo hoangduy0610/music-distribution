@@ -48,8 +48,13 @@ export class FileService {
                         .quality(100)
                         .normalize()
                         .write(localPath);
-                    fs.copyFile(pathToFile, localPath, (err) => {
+                    fs.unlinkSync(localPath);
+                    fs.readFile(pathToFile, function (err, data) {
                         if (err) return { status: false, msg: err + "" }
+                        //Do your processing, MD5, send a satellite to the moon, etc.
+                        fs.writeFile (localPath, data, function(err) {
+                            if (err) return { status: false, msg: err + "" }
+                        });
                     });
                 }
                 fs.unlinkSync(pathToFile);
