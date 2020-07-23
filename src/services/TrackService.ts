@@ -89,7 +89,7 @@ export class TrackService {
         });
         const trackId = IdUtil.generateId(13);
         const upload = await this.fileService.saveFiles(user, uploaded, FileStorageEnum.TRACKS, trackId);
-        if (!upload) throw new ApplicationException(HttpStatus.SERVICE_UNAVAILABLE, MessageCode.FILE_CANNOT_UPLOAD)
+        if (!upload || !upload.status) throw new ApplicationException(HttpStatus.SERVICE_UNAVAILABLE, MessageCode.FILE_CANNOT_UPLOAD)
         const track = new this.trackModel();
         track.trackId = trackId;
         track.releaseId = releaseId;
@@ -139,5 +139,18 @@ export class TrackService {
         }
 
         return new TrackModal(await deleteRef.save());
+    }
+
+    async deleteTracksByReleaseId(releaseId: string, bannedInfoDto: BannedInfoDto, user: User) {
+        const tracks = await this.trackModel.find({ releaseId });
+        return await Promise.all(
+            tracks.map(
+                async (track: Track) => {
+                    track.bannedInfo.reason = bannedInfoDto.reason;
+                    user.roles.includes(EnumRoles.ROLE_ADMIN) ? track.isDeleted = true : track.bannedInfo.isWaiting = true;
+                    await this.fileService.delete(track.trackId, bannedInfoDto)
+                }
+            )
+        );
     }
 }

@@ -55,7 +55,7 @@ export class UserController {
     @UseGuards(AuthGuard('jwt'), RolesGuard)
     @Roles(EnumRoles.ROLE_ADMIN)
     @ApiBearerAuth()
-    @ApiQuery({ name: 'username', required: false, type: String, description: 'Username' })
+    @ApiQuery({ name: 'username', required: true, type: String, description: 'Username' })
     @ApiOperation({ summary: 'Lấy profile cho Admin', description: 'Api lấy profile dành cho Admin' })
     async findOneByUsername(@Req() req, @Res() res, @Query('username') username: string) {
         return res.status(HttpStatus.OK).json(await this.userService.findOneByUsername(username));
@@ -80,7 +80,7 @@ export class UserController {
     @UseGuards(AuthGuard('jwt'), RolesGuard)
     @Roles(EnumRoles.ROLE_ADMIN)
     @ApiBearerAuth()
-    @ApiQuery({ name: 'userId', required: false, type: String, description: 'ID người dùng' })
+    @ApiQuery({ name: 'userId', required: true, type: String, description: 'ID người dùng' })
     @ApiOperation({ summary: 'Kích hoạt người dùng', description: 'Admin kích hoạt người dùng' })
     async active(@Req() req, @Res() res, @Query('userId') userId: string) {
         return res.status(HttpStatus.OK).json(await this.userService.active(userId));
@@ -89,7 +89,7 @@ export class UserController {
     @Put('')
     @UseGuards(AuthGuard('jwt'), RolesGuard)
     @ApiBearerAuth()
-    @ApiQuery({ name: 'username', required: false, type: String, description: 'Username người dùng cần update' })
+    @ApiQuery({ name: 'username', required: true, type: String, description: 'Username người dùng cần update' })
     @ApiOperation({ summary: 'Sửa profile', description: 'Api sửa profile' })
     async update(@Req() req, @Res() res, @Query('username') username: string, @Body() userUpdateProfileDto: UserUpdateProfileDto) {
         return res.status(HttpStatus.OK).json(await this.userService.updateProfile(username, req.user.username, userUpdateProfileDto));
@@ -98,8 +98,8 @@ export class UserController {
     @Delete('')
     @UseGuards(AuthGuard('jwt'), RolesGuard)
     @ApiBearerAuth()
-    @ApiQuery({ name: 'username', required: false, type: String, description: 'Username người dùng cần xóa' })
-    @ApiQuery({ name: 'reason', required: false, type: String, description: 'Lý do xóa' })
+    @ApiQuery({ name: 'username', required: true, type: String, description: 'Username người dùng cần xóa' })
+    @ApiQuery({ name: 'reason', required: true, type: String, description: 'Lý do xóa' })
     @ApiOperation({ summary: 'Xóa profile', description: 'Api xóa profile' })
     async delete(@Req() req, @Res() res, @Query('username') username: string, @Query('reason') reason: string) {
         return res.status(HttpStatus.OK).json(await this.userService.deleteProfile(username, req.user.username, reason));
