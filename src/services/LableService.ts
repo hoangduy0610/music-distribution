@@ -9,8 +9,8 @@ import { Model } from 'mongoose';
 import { Lable } from '../interfaces/LableInterface';
 import { User } from '../interfaces/UserInterface';
 import { LableCreateDto } from '../dtos/LableCreateDto';
-import { LableUpdateDto } from 'src/dtos/LableUpdateDto';
-import { BannedInfoDto } from 'src/dtos/BannedInfoDto';
+import { LableUpdateDto } from '../dtos/LableUpdateDto';
+import { BannedInfoDto } from '../dtos/BannedInfoDto';
 
 @Injectable()
 export class LableService {

@@ -81,7 +81,7 @@ export class TrackService {
 
     async upload(user: User, releaseId: string, files: any): Promise<TrackModal> {
         if (!files || files.empty) {
-            throw new ApplicationException(HttpStatus.BAD_REQUEST, "Không tìm thấy hình ảnh gửi lên")
+            throw new ApplicationException(HttpStatus.BAD_REQUEST, MessageCode.FILE_NOT_FOUND)
         }
         const uploaded: String[] = [];
         files.forEach(file => {

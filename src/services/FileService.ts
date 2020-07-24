@@ -52,7 +52,7 @@ export class FileService {
                     fs.readFile(pathToFile, function (err, data) {
                         if (err) return { status: false, msg: err + "" }
                         //Do your processing, MD5, send a satellite to the moon, etc.
-                        fs.writeFile (localPath, data, function(err) {
+                        fs.writeFile(localPath, data, function (err) {
                             if (err) return { status: false, msg: err + "" }
                         });
                     });
@@ -75,13 +75,13 @@ export class FileService {
             return { status: true, msg: saveFiles }
         }
         //return await this.fileModel.find({ userId: userId }).exec()
-        throw new ApplicationException(HttpStatus.NOT_FOUND, "Không tìm thấy file tải lên")
+        throw new ApplicationException(HttpStatus.NOT_FOUND, MessageCode.FILE_NOT_FOUND)
     }
 
     async delete(useForId: string, bannedInfoDto: BannedInfoDto) {
         const file: File = await this.fileRepository.getFileDetailsById(useForId);
         if (!file) {
-            throw new ApplicationException(HttpStatus.BAD_REQUEST, "Không tìm thấy file");
+            throw new ApplicationException(HttpStatus.BAD_REQUEST, MessageCode.FILE_NOT_FOUND);
         }
         fs.unlinkSync(file.localPath);
         fs.rmdirSync(file.localPath.substring(0, file.localPath.length - 21))

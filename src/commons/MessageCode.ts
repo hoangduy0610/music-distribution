@@ -21,6 +21,7 @@ export enum MessageCode {
 	TRACK_IS_WAITING = 'Track đang chờ xóa',
 	TRACK_IS_DELETED = 'Track đã bị xóa',
 	FILE_CANNOT_UPLOAD = 'Không upload file được',
+	FILE_NOT_FOUND = 'Không tìm thấy file',
 	LABLE_NAME_IS_NULL = 'Tên lable không được để trông',
 	LABLE_NOT_FOUND = 'Không tìm thấy lable này',
 	LABLE_IS_WAITING = 'Lable đang chờ xóa',

@@ -13,7 +13,7 @@ import {
     UseGuards,
     UseInterceptors
 } from '@nestjs/common';
-import { ApiBearerAuth, ApiConsumes, ApiQuery, ApiOperation, ApiTags } from '@nestjs/swagger';
+import { ApiBearerAuth, ApiConsumes, ApiQuery, ApiOperation, ApiTags, ApiBody } from '@nestjs/swagger';
 import { ReleaseService } from '../services/ReleaseService';
 import { RolesGuard } from '../guards/RoleGuard';
 import { AuthGuard } from '@nestjs/passport';
@@ -22,8 +22,19 @@ import { EnumRoles } from '../commons/EnumRoles';
 import { ReleaseUpdateDto } from '../dtos/ReleaseUpdateDto';
 import { BannedInfoDto } from '../dtos/BannedInfoDto';
 import { DraftReleaseUpdateDto } from '../dtos/DraftReleaseUpdateDto';
+import { diskStorage } from 'multer';
+import { FileUtils } from '../utils/FileUtil';
+import { FilesInterceptor } from '@nestjs/platform-express';
+import { FileUploadDto } from 'src/dtos/FileUploadDto';
 
-
+export const myStorage = diskStorage({
+    // Specify where to save the file
+    destination: (req, file, cb) => {
+        cb(null, process.env.DESTINATION_UPLOAD);
+    },
+    // Specify the file name
+    filename: FileUtils.exceptFileImage,
+});
 
 @ApiTags('release')
 @Controller('release')
@@ -130,5 +141,31 @@ export class ReleaseController {
     @ApiOperation({ summary: 'Xóa release draft', description: 'Xóa release draft' })
     async deleteDraft(@Req() req, @Res() res, @Query('releaseId') releaseId: string) {
         return res.status(HttpStatus.OK).json(await this.releaseService.deleteDraft(releaseId, req.user));
+    }
+
+    @Post('/image')
+    @UseGuards(AuthGuard('jwt'), RolesGuard)
+    @ApiBearerAuth()
+    @ApiQuery({ name: 'releaseId', required: true, type: String, description: 'Release ID' })
+    @ApiConsumes('multipart/form-data')
+    @UseInterceptors(FilesInterceptor('files', 20, {
+        storage: myStorage,
+    }))
+    @ApiBody({
+        description: 'List Image',
+        type: FileUploadDto,
+    })
+    @ApiOperation({ summary: 'Thêm release', description: 'Chuyển trạng thái từ draft sang pending' })
+    async uploadCover(@Req() req, @Res() res, @Query('releaseId') releaseId: string, @UploadedFiles() files) {
+        return res.status(HttpStatus.OK).json(await this.releaseService.uploadCover(releaseId, req.user, files));
+    }
+
+    @Delete('/image')
+    @UseGuards(AuthGuard('jwt'), RolesGuard)
+    @ApiBearerAuth()
+    @ApiQuery({ name: 'releaseId', required: true, type: String, description: 'Release ID' })
+    @ApiOperation({ summary: 'Xóa cover release', description: 'Xóa cover release' })
+    async deleteCover(@Req() req, @Res() res, @Query('releaseId') releaseId: string) {
+        return res.status(HttpStatus.OK).json(await this.releaseService.deleteCover(releaseId, req.user));
     }
 }

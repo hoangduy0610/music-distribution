@@ -15,6 +15,8 @@ import { TrackService } from './TrackService';
 import { TrackModal, DraftTrackModal } from '../modals/TrackModal';
 import { DraftReleaseUpdateDto } from '../dtos/DraftReleaseUpdateDto';
 import { IdUtil } from '../utils/IdUtil';
+import { FileService } from './FileService';
+import { FileStorageEnum } from '../commons/FileStorageEnum';
 
 @Injectable()
 export class ReleaseService {
@@ -24,6 +26,7 @@ export class ReleaseService {
         private readonly releaseRepository: ReleaseRepository,
         private readonly draftReleaseRepository: DraftReleaseRepository,
         private readonly trackService: TrackService,
+        private readonly fileService: FileService,
     ) {
     }
 
@@ -154,6 +157,8 @@ export class ReleaseService {
             deleteRef.bannedInfo.isWaiting = true;
         }
 
+        if (deleteRef.cover && deleteRef.cover !== "") await this.deleteCover(releaseId, user);
+
         deleteRef.bannedInfo.reason = bannedInfoDto.reason;
         deleteRef.bannedInfo.createdAt = new Date();
 
@@ -246,6 +251,8 @@ export class ReleaseService {
             }
         }
 
+        if (deleteRef.cover && deleteRef.cover !== "") await this.deleteCover(releaseId, user);
+
         const res = await this.draftReleaseModel.deleteOne({ releaseId });
         await this.trackService.deleteTracksByReleaseId(releaseId, { reason: "Draft" }, user);
         if (res.deletedCount) return { statusCode: 200, msg: "Deleted" }
@@ -280,5 +287,39 @@ export class ReleaseService {
         await this.draftReleaseModel.deleteOne({ releaseId });
 
         return new ReleaseModal(await news.save())
+    }
+
+    async uploadCover(releaseId: string, user: User, files: any): Promise<ReleaseModal> {
+        const release = await this.releaseModel.findOne({ releaseId }),
+            isAdmin = user.roles.includes(EnumRoles.ROLE_ADMIN);
+        if (!release) throw new ApplicationException(HttpStatus.NOT_FOUND, MessageCode.RELEASE_NOT_FOUND)
+        if (release.owner !== user.username && !isAdmin) throw new ApplicationException(HttpStatus.FORBIDDEN, MessageCode.ERROR_USER_NOT_HAVE_PERMISSION)
+
+        if (!files || files.empty) {
+            throw new ApplicationException(HttpStatus.BAD_REQUEST, MessageCode.FILE_NOT_FOUND)
+        }
+        const uploaded: String[] = [];
+        files.forEach(file => {
+            uploaded.push(file.originalname)
+        });
+
+        const upload = await this.fileService.saveFiles(user, uploaded, FileStorageEnum.IMAGES, releaseId);
+        if (!upload || !upload.status) throw new ApplicationException(HttpStatus.SERVICE_UNAVAILABLE, MessageCode.FILE_CANNOT_UPLOAD)
+
+        release.cover = upload.msg[0].internalPath;
+
+        return new ReleaseModal(await release.save())
+    }
+
+    async deleteCover(releaseId: string, user: User): Promise<ReleaseModal> {
+        const release = await this.releaseModel.findOne({ releaseId }),
+            isAdmin = user.roles.includes(EnumRoles.ROLE_ADMIN);
+        if (!release) throw new ApplicationException(HttpStatus.NOT_FOUND, MessageCode.RELEASE_NOT_FOUND)
+        if (release.owner !== user.username && !isAdmin) throw new ApplicationException(HttpStatus.FORBIDDEN, MessageCode.ERROR_USER_NOT_HAVE_PERMISSION)
+
+        await this.fileService.delete(releaseId, { reason: 'Delete cover' });
+        release.cover = "";
+
+        return new ReleaseModal(await release.save())
     }
 }

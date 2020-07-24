@@ -20,8 +20,8 @@ import { AuthGuard } from '@nestjs/passport';
 import { Roles } from '../guards/RoleDecorator';
 import { EnumRoles } from '../commons/EnumRoles';
 import { LableCreateDto } from '../dtos/LableCreateDto';
-import { LableUpdateDto } from 'src/dtos/LableUpdateDto';
-import { BannedInfoDto } from 'src/dtos/BannedInfoDto';
+import { LableUpdateDto } from '../dtos/LableUpdateDto';
+import { BannedInfoDto } from '../dtos/BannedInfoDto';
 
 
 
