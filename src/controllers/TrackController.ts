@@ -27,7 +27,7 @@ import { FileUtils } from '../utils/FileUtil';
 import { FileUploadDto } from '../dtos/FileUploadDto';
 import { BannedInfoDto } from '../dtos/BannedInfoDto';
 
-export const myStorage = diskStorage({
+const myStorage = diskStorage({
     // Specify where to save the file
     destination: (req, file, cb) => {
         cb(null, process.env.DESTINATION_UPLOAD);

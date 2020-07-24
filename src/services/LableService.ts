@@ -11,12 +11,15 @@ import { User } from '../interfaces/UserInterface';
 import { LableCreateDto } from '../dtos/LableCreateDto';
 import { LableUpdateDto } from '../dtos/LableUpdateDto';
 import { BannedInfoDto } from '../dtos/BannedInfoDto';
+import { FileStorageEnum } from 'src/commons/FileStorageEnum';
+import { FileService } from './FileService';
 
 @Injectable()
 export class LableService {
     constructor(
         @InjectModel('Lable') private readonly lableModel: Model<Lable>,
         private readonly lableRepository: LableRepository,
+        private readonly fileService: FileService,
     ) {
     }
 
@@ -100,6 +103,8 @@ export class LableService {
             deleteRef.bannedInfo.isWaiting = true;
         }
 
+        if (deleteRef.cover && deleteRef.cover !== "") await this.deleteCover(id, user);
+
         deleteRef.bannedInfo.reason = bannedInfoDto.reason;
         deleteRef.bannedInfo.createdAt = new Date();
 
@@ -111,5 +116,39 @@ export class LableService {
         deleteRef.updatedBy = user.username;
 
         return new LableModal(await deleteRef.save());
+    }
+
+    async uploadCover(id: string, user: User, files: any): Promise<LableModal> {
+        const lable = await this.lableModel.findOne({ _id: id }),
+            isAdmin = user.roles.includes(EnumRoles.ROLE_ADMIN);
+        if (!lable) throw new ApplicationException(HttpStatus.NOT_FOUND, MessageCode.LABLE_NOT_FOUND)
+        if (lable.owner !== user.username && !isAdmin) throw new ApplicationException(HttpStatus.FORBIDDEN, MessageCode.ERROR_USER_NOT_HAVE_PERMISSION)
+
+        if (!files || files.empty) {
+            throw new ApplicationException(HttpStatus.BAD_REQUEST, MessageCode.FILE_NOT_FOUND)
+        }
+        const uploaded: String[] = [];
+        files.forEach(file => {
+            uploaded.push(file.originalname)
+        });
+
+        const upload = await this.fileService.saveFiles(user, uploaded, FileStorageEnum.IMAGES, id);
+        if (!upload || !upload.status) throw new ApplicationException(HttpStatus.SERVICE_UNAVAILABLE, MessageCode.FILE_CANNOT_UPLOAD)
+
+        lable.cover = upload.msg[0].internalPath;
+
+        return new LableModal(await lable.save())
+    }
+
+    async deleteCover(id: string, user: User): Promise<LableModal> {
+        const lable = await this.lableModel.findOne({ _id: id }),
+            isAdmin = user.roles.includes(EnumRoles.ROLE_ADMIN);
+        if (!lable) throw new ApplicationException(HttpStatus.NOT_FOUND, MessageCode.LABLE_NOT_FOUND)
+        if (lable.owner !== user.username && !isAdmin) throw new ApplicationException(HttpStatus.FORBIDDEN, MessageCode.ERROR_USER_NOT_HAVE_PERMISSION)
+
+        await this.fileService.delete(id, { reason: 'Delete cover' });
+        lable.cover = "";
+
+        return new LableModal(await lable.save())
     }
 }
