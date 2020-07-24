@@ -25,9 +25,9 @@ import { DraftReleaseUpdateDto } from '../dtos/DraftReleaseUpdateDto';
 import { diskStorage } from 'multer';
 import { FileUtils } from '../utils/FileUtil';
 import { FilesInterceptor } from '@nestjs/platform-express';
-import { FileUploadDto } from 'src/dtos/FileUploadDto';
+import { FileUploadDto } from '../dtos/FileUploadDto';
 
-export const myStorage = diskStorage({
+const myStorage = diskStorage({
     // Specify where to save the file
     destination: (req, file, cb) => {
         cb(null, process.env.DESTINATION_UPLOAD);
@@ -155,7 +155,7 @@ export class ReleaseController {
         description: 'List Image',
         type: FileUploadDto,
     })
-    @ApiOperation({ summary: 'Thêm release', description: 'Chuyển trạng thái từ draft sang pending' })
+    @ApiOperation({ summary: 'Thêm cover cho release', description: 'Thêm cover cho release' })
     async uploadCover(@Req() req, @Res() res, @Query('releaseId') releaseId: string, @UploadedFiles() files) {
         return res.status(HttpStatus.OK).json(await this.releaseService.uploadCover(releaseId, req.user, files));
     }
