@@ -42,6 +42,15 @@ export class LableController {
         return res.status(HttpStatus.OK).json(await this.lableService.findAll(isDeleted, req.user));
     }
 
+    @Get('')
+    @UseGuards(AuthGuard('jwt'), RolesGuard)
+    @ApiBearerAuth()
+    @ApiQuery({ name: 'id', required: true, type: String, description: 'Id lable' })
+    @ApiOperation({ summary: 'Lấy thông tin lable', description: 'Api lấy thông tin lable' })
+    async find(@Req() req, @Res() res, @Query('id') id: string) {
+        return res.status(HttpStatus.OK).json(await this.lableService.find(id, req.user));
+    }
+
     @Post('')
     @UseGuards(AuthGuard('jwt'), RolesGuard)
     @ApiBearerAuth()

@@ -27,6 +27,15 @@ export class LableService {
         else return isDeleted ? await this.lableRepository.findByOwner(isDeleted, owner) : LableModal.fromLables(await this.lableModel.find({ owner }).exec());
     }
 
+    async find(id: string, user: User): Promise<LableModal> {
+        const lable = await this.lableModel.findOne({ _id: id }),
+            isAdmin = user.roles.includes(EnumRoles.ROLE_ADMIN);
+        if (!lable) throw new ApplicationException(HttpStatus.NOT_FOUND, MessageCode.LABLE_NOT_FOUND)
+        if (lable.owner !== user.username && !isAdmin) throw new ApplicationException(HttpStatus.FORBIDDEN, MessageCode.ERROR_USER_NOT_HAVE_PERMISSION)
+
+        return new LableModal(lable);
+    }
+
     async create(user: User, lableCreateDto: LableCreateDto): Promise<LableModal> {
         const roles = user.roles,
             owner = user.username;
