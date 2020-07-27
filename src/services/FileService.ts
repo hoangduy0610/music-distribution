@@ -31,7 +31,7 @@ export class FileService {
                 const fileName = IdUtil.generateId(8) + '_' + IdUtil.generateId(8) /*Date.now()*/;
                 const internalPath = process.env.DESTINATION_TO_RENDER + `${type}/${id}/${imageType}/${fileName}.${extension}`;
                 const localPath = process.env.DESTINATION_SAVE_FILE + `${type}${process.env.SLASH_SYSTEM}${id}${process.env.SLASH_SYSTEM}${imageType}${process.env.SLASH_SYSTEM}${fileName}.${extension}`
-
+                const localDir = process.env.DESTINATION_SAVE_FILE + `${type}${process.env.SLASH_SYSTEM}${id}${process.env.SLASH_SYSTEM}${imageType}${process.env.SLASH_SYSTEM}`
                 if (type === FileStorageEnum.IMAGES) {
                     const saveFile = await jimp.read(pathToFile);
                     await saveFile
@@ -41,21 +41,15 @@ export class FileService {
                         .normalize()
                         .write(localPath);
                 } else {
-                    const saveFile = await jimp.read(process.env.DESTINATION_UPLOAD + `/none.png`);
-                    await saveFile
-                        //.resize(600, 400, jimp.RESIZE_BEZIER)
-                        //.scaleToFit(200, 200)
-                        .quality(100)
-                        .normalize()
-                        .write(localPath);
-                    fs.unlinkSync(localPath);
-                    fs.readFile(pathToFile, function (err, data) {
-                        if (err) return { status: false, msg: err + "" }
-                        //Do your processing, MD5, send a satellite to the moon, etc.
-                        fs.writeFile(localPath, data, function (err) {
-                            if (err) return { status: false, msg: err + "" }
-                        });
-                    });
+                    try {
+                        fs.mkdirSync(localDir, { recursive: true });
+                        const data = fs.readFileSync(pathToFile);
+                        fs.writeFileSync(localPath, data);
+                    } catch (error) {
+                        throw new ApplicationException(HttpStatus.BAD_REQUEST, MessageCode.FILE_NOT_FOUND)
+                    }
+
+                    //fs.unlinkSync(localPath);
                 }
                 fs.unlinkSync(pathToFile);
                 const saved: File = new this.fileModel({
