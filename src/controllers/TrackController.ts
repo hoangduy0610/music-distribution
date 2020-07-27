@@ -62,6 +62,15 @@ export class TrackController {
         return res.status(HttpStatus.OK).json(await this.trackService.upload(req.user, releaseId, files));
     }
 
+    @Get('/artists')
+    @UseGuards(AuthGuard('jwt'), RolesGuard)
+    @ApiBearerAuth()
+    @ApiQuery({ name: 'trackId', required: true, type: String, description: 'track ID' })
+    @ApiOperation({ summary: 'Lấy danh sách Artists', description: 'Api lấy danh sách artist' })
+    async findArtists(@Req() req, @Res() res, @Query('trackId') trackId: string) {
+        return res.status(HttpStatus.OK).json(await this.trackService.findArtists(trackId));
+    }
+
     @Put('')
     @UseGuards(AuthGuard('jwt'), RolesGuard)
     @ApiBearerAuth()

@@ -17,6 +17,7 @@ import { DraftReleaseUpdateDto } from '../dtos/DraftReleaseUpdateDto';
 import { IdUtil } from '../utils/IdUtil';
 import { FileService } from './FileService';
 import { FileStorageEnum } from '../commons/FileStorageEnum';
+import { UserService } from './UserService';
 
 @Injectable()
 export class ReleaseService {
@@ -27,6 +28,7 @@ export class ReleaseService {
         private readonly draftReleaseRepository: DraftReleaseRepository,
         private readonly trackService: TrackService,
         private readonly fileService: FileService,
+        private readonly userService: UserService,
     ) {
     }
 
@@ -75,6 +77,27 @@ export class ReleaseService {
         }
 
         return new ReleaseModal(release);
+    }
+
+    async findArtists(releaseId: string): Promise<any> {
+        const release = await this.releaseModel.findOne({ releaseId });
+        if (!release) {
+            throw new ApplicationException(HttpStatus.NOT_FOUND, MessageCode.RELEASE_NOT_FOUND);
+        }
+        if (release.isDeleted) {
+            throw new ApplicationException(HttpStatus.NOT_FOUND, MessageCode.RELEASE_IS_DELETED);
+        }
+
+        var userInfomation: any[] = [];
+        const info = release.artist;
+
+        for (let i = 0; i < info.length; i++) {
+            const data = info[i];
+            let user = await this.userService.findArtistByUsername(data.username);
+            userInfomation.push({ name: user.fullName, role: data.role });
+            //userInfomation[i].user = user;
+        }
+        return userInfomation;
     }
 
     async update(releaseId: string, user: User, releaseUpdateDto: ReleaseUpdateDto): Promise<ReleaseModal> {

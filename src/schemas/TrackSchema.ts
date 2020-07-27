@@ -2,7 +2,7 @@ import { Schema } from 'mongoose';
 
 const Artists = new Schema({
     username: { type: String, required: true/*, enum: ['supplier', 'producer', 'transporter'] */ },
-    role: { type: String, required: true, enum: ['performer', 'producer'] },
+    role: { type: String, required: true, enum: ['main', 'performer', 'producer'] },
 }, { _id: false });
 
 export const TrackSchema = new Schema({

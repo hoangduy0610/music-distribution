@@ -6,20 +6,23 @@ import { TrackService } from '../services/TrackService';
 import { TrackRepository } from '../repositories/TrackRepository';
 import { MulterModule } from '@nestjs/platform-express';
 import { FileModule } from './FileModule';
+import { UserService } from '../services/UserService';
+import { UserModule } from './UserModule';
 @Module({
-    imports: [
-        MongooseModule.forFeature([{ name: 'Track', schema: TrackSchema }]),
-        MongooseModule.forFeature([{ name: 'DraftTrack', schema: DraftTrackSchema }]),
-        /*MulterModule.registerAsync({
-            useFactory: () => ({
-              dest: './upload',
-            }),
-          }),*/
-        FileModule
-    ],
-    controllers: [TrackController],
-    providers: [TrackService, TrackRepository],
-    exports: [TrackService],
+  imports: [
+    MongooseModule.forFeature([{ name: 'Track', schema: TrackSchema }]),
+    MongooseModule.forFeature([{ name: 'DraftTrack', schema: DraftTrackSchema }]),
+    /*MulterModule.registerAsync({
+        useFactory: () => ({
+          dest: './upload',
+        }),
+      }),*/
+    FileModule,
+    UserModule
+  ],
+  controllers: [TrackController],
+  providers: [TrackService, TrackRepository],
+  exports: [TrackService],
 })
 export class TrackModule {
 }

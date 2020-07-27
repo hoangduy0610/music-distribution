@@ -62,6 +62,15 @@ export class ReleaseController {
         return res.status(HttpStatus.OK).json(await this.releaseService.findAll(isDeleted, active, req.user));
     }
 
+    @Get('/artists')
+    @UseGuards(AuthGuard('jwt'), RolesGuard)
+    @ApiBearerAuth()
+    @ApiQuery({ name: 'releaseId', required: true, type: String, description: 'Release ID' })
+    @ApiOperation({ summary: 'Lấy danh sách Artists', description: 'Api lấy danh sách artist' })
+    async findArtists(@Req() req, @Res() res, @Query('releaseId') releaseId: string) {
+        return res.status(HttpStatus.OK).json(await this.releaseService.findArtists(releaseId));
+    }
+
     @Get('/draft/list')
     @UseGuards(AuthGuard('jwt'), RolesGuard)
     @ApiBearerAuth()

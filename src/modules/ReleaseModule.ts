@@ -7,12 +7,14 @@ import { ReleaseRepository } from '../repositories/ReleaseRepository';
 import { DraftReleaseRepository } from '../repositories/DraftReleaseRepository';
 import { TrackModule } from './TrackModule';
 import { FileModule } from './FileModule';
+import { UserModule } from './UserModule';
 @Module({
     imports: [
         MongooseModule.forFeature([{ name: 'Release', schema: ReleaseSchema }]),
         MongooseModule.forFeature([{ name: 'DraftRelease', schema: DraftReleaseSchema }]),
         TrackModule,
-        FileModule
+        FileModule,
+        UserModule
     ],
     controllers: [ReleaseController],
     providers: [ReleaseService, ReleaseRepository, DraftReleaseRepository],
