@@ -124,9 +124,6 @@ export class ReleaseService {
         if (releaseUpdate.isDeleted) {
             throw new ApplicationException(HttpStatus.BAD_REQUEST, MessageCode.RELEASE_IS_DELETED);
         }
-        if (!releaseUpdate.active) {
-            throw new ApplicationException(HttpStatus.BAD_REQUEST, MessageCode.RELEASE_NOT_ACTIVE);
-        }
 
         if (releaseUpdateDto.artist && releaseUpdateDto.artist.length) releaseUpdate.artist = releaseUpdateDto.artist;
         if (releaseUpdateDto.barcode) releaseUpdate.barcode = releaseUpdateDto.barcode;
@@ -146,6 +143,12 @@ export class ReleaseService {
     async active(releaseId: string, updatedBy: string): Promise<ReleaseModal> {
         const release = await this.releaseModel.findOne({ releaseId }).exec();
         release.active = true;
+        release.updatedBy = updatedBy;
+        return new ReleaseModal(await release.save());
+    }
+
+    async released(releaseId: string, updatedBy: string): Promise<ReleaseModal> {
+        const release = await this.releaseModel.findOne({ releaseId }).exec();
         release.status = 'Released';
         release.updatedBy = updatedBy;
         return new ReleaseModal(await release.save());
@@ -334,6 +337,28 @@ export class ReleaseService {
         return new ReleaseModal(await release.save())
     }
 
+    async uploadCoverDraft(releaseId: string, user: User, files: any): Promise<DraftReleaseModal> {
+        const release = await this.draftReleaseModel.findOne({ releaseId }),
+            isAdmin = user.roles.includes(EnumRoles.ROLE_ADMIN);
+        if (!release) throw new ApplicationException(HttpStatus.NOT_FOUND, MessageCode.RELEASE_NOT_FOUND)
+        if (release.owner !== user.username && !isAdmin) throw new ApplicationException(HttpStatus.FORBIDDEN, MessageCode.ERROR_USER_NOT_HAVE_PERMISSION)
+
+        if (!files || files.empty) {
+            throw new ApplicationException(HttpStatus.BAD_REQUEST, MessageCode.FILE_NOT_FOUND)
+        }
+        const uploaded: String[] = [];
+        files.forEach(file => {
+            uploaded.push(file.originalname)
+        });
+
+        const upload = await this.fileService.saveFiles(user, uploaded, FileStorageEnum.IMAGES, releaseId);
+        if (!upload || !upload.status) throw new ApplicationException(HttpStatus.SERVICE_UNAVAILABLE, MessageCode.FILE_CANNOT_UPLOAD)
+
+        release.cover = upload.msg[0].internalPath;
+
+        return new DraftReleaseModal(await release.save())
+    }
+
     async deleteCover(releaseId: string, user: User): Promise<ReleaseModal> {
         const release = await this.releaseModel.findOne({ releaseId }),
             isAdmin = user.roles.includes(EnumRoles.ROLE_ADMIN);
@@ -344,5 +369,17 @@ export class ReleaseService {
         release.cover = "";
 
         return new ReleaseModal(await release.save())
+    }
+
+    async deleteCoverDraft(releaseId: string, user: User): Promise<DraftReleaseModal> {
+        const release = await this.draftReleaseModel.findOne({ releaseId }),
+            isAdmin = user.roles.includes(EnumRoles.ROLE_ADMIN);
+        if (!release) throw new ApplicationException(HttpStatus.NOT_FOUND, MessageCode.RELEASE_NOT_FOUND)
+        if (release.owner !== user.username && !isAdmin) throw new ApplicationException(HttpStatus.FORBIDDEN, MessageCode.ERROR_USER_NOT_HAVE_PERMISSION)
+
+        await this.fileService.delete(releaseId, { reason: 'Delete cover' });
+        release.cover = "";
+
+        return new DraftReleaseModal(await release.save())
     }
 }

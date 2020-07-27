@@ -125,6 +125,16 @@ export class ReleaseController {
         return res.status(HttpStatus.OK).json(await this.releaseService.active(releaseId, req.user.username));
     }
 
+    @Put('/released')
+    @UseGuards(AuthGuard('jwt'), RolesGuard)
+    @ApiBearerAuth()
+    @Roles(EnumRoles.ROLE_ADMIN)
+    @ApiQuery({ name: 'releaseId', required: true, type: String, description: 'Release ID' })
+    @ApiOperation({ summary: 'Đánh dấu released', description: 'Đánh dấu released' })
+    async released(@Req() req, @Res() res, @Query('releaseId') releaseId: string) {
+        return res.status(HttpStatus.OK).json(await this.releaseService.released(releaseId, req.user.username));
+    }
+
     @Put('/draft')
     @UseGuards(AuthGuard('jwt'), RolesGuard)
     @ApiBearerAuth()
@@ -176,5 +186,31 @@ export class ReleaseController {
     @ApiOperation({ summary: 'Xóa cover release', description: 'Xóa cover release' })
     async deleteCover(@Req() req, @Res() res, @Query('releaseId') releaseId: string) {
         return res.status(HttpStatus.OK).json(await this.releaseService.deleteCover(releaseId, req.user));
+    }
+
+    @Post('/draft/image')
+    @UseGuards(AuthGuard('jwt'), RolesGuard)
+    @ApiBearerAuth()
+    @ApiQuery({ name: 'releaseId', required: true, type: String, description: 'Release ID' })
+    @ApiConsumes('multipart/form-data')
+    @UseInterceptors(FilesInterceptor('files', 20, {
+        storage: myStorage,
+    }))
+    @ApiBody({
+        description: 'List Image',
+        type: FileUploadDto,
+    })
+    @ApiOperation({ summary: 'Thêm cover cho release', description: 'Thêm cover cho release' })
+    async uploadCoverDraft(@Req() req, @Res() res, @Query('releaseId') releaseId: string, @UploadedFiles() files) {
+        return res.status(HttpStatus.OK).json(await this.releaseService.uploadCoverDraft(releaseId, req.user, files));
+    }
+
+    @Delete('/draft/image')
+    @UseGuards(AuthGuard('jwt'), RolesGuard)
+    @ApiBearerAuth()
+    @ApiQuery({ name: 'releaseId', required: true, type: String, description: 'Release ID' })
+    @ApiOperation({ summary: 'Xóa cover release', description: 'Xóa cover release' })
+    async deleteCoverDraft(@Req() req, @Res() res, @Query('releaseId') releaseId: string) {
+        return res.status(HttpStatus.OK).json(await this.releaseService.deleteCoverDraft(releaseId, req.user));
     }
 }
