@@ -131,7 +131,7 @@ export class ReleaseService {
         if (releaseUpdateDto.credit) releaseUpdate.credit = releaseUpdateDto.credit;
         if (releaseUpdateDto.description) releaseUpdate.description = releaseUpdateDto.description;
         if (releaseUpdateDto.genre) releaseUpdate.genre = releaseUpdateDto.genre;
-        if (releaseUpdateDto.lableId) releaseUpdate.lableId = releaseUpdateDto.lableId;
+        if (releaseUpdateDto.labelId) releaseUpdate.labelId = releaseUpdateDto.labelId;
         if (releaseUpdateDto.releaseAt) releaseUpdate.releaseAt = releaseUpdateDto.releaseAt;
         if (releaseUpdateDto.shops) releaseUpdate.shops = releaseUpdateDto.shops;
         if (releaseUpdateDto.title) releaseUpdate.title = releaseUpdateDto.title;
@@ -252,7 +252,7 @@ export class ReleaseService {
         if (releaseUpdateDto.credit) releaseUpdate.credit = releaseUpdateDto.credit;
         if (releaseUpdateDto.description) releaseUpdate.description = releaseUpdateDto.description;
         if (releaseUpdateDto.genre) releaseUpdate.genre = releaseUpdateDto.genre;
-        if (releaseUpdateDto.lableId) releaseUpdate.lableId = releaseUpdateDto.lableId;
+        if (releaseUpdateDto.labelId) releaseUpdate.labelId = releaseUpdateDto.labelId;
         if (releaseUpdateDto.releaseAt) releaseUpdate.releaseAt = releaseUpdateDto.releaseAt;
         if (releaseUpdateDto.shops) releaseUpdate.shops = releaseUpdateDto.shops;
         if (releaseUpdateDto.title) releaseUpdate.title = releaseUpdateDto.title;
@@ -301,7 +301,7 @@ export class ReleaseService {
         if (release.credit) news.credit = release.credit;
         if (release.description) news.description = release.description;
         if (release.genre) news.genre = release.genre;
-        if (release.lableId) news.lableId = release.lableId;
+        if (release.labelId) news.labelId = release.labelId;
         if (release.releaseAt) news.releaseAt = release.releaseAt;
         if (release.shops) news.shops = release.shops;
         if (release.title) news.title = release.title;

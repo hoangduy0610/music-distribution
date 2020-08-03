@@ -17,7 +17,7 @@ export const ReleaseSchema = new Schema({
         type: [Artists],
         require: true
     },
-    lableId: { type: String, require: true },
+    labelId: { type: String, require: true },
     genre: { type: String, require: true },
     barcode: { type: String, require: false },
     credit: { type: String, require: true },
@@ -51,7 +51,7 @@ export const DraftReleaseSchema = new Schema({
         type: [Artists],
         require: false
     },
-    lableId: { type: String, require: false },
+    labelId: { type: String, require: false },
     genre: { type: String, require: false },
     barcode: { type: String, require: false },
     credit: { type: String, require: false },

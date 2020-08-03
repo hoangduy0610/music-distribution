@@ -26,7 +26,7 @@ export class ReleaseModal {
     active: boolean;
     cover: string;
     artist: ArtistsModal[];
-    lableId: string;
+    labelId: string;
     genre: string;
     barcode: string;
     credit: string;
@@ -54,7 +54,7 @@ export class ReleaseModal {
         this.active = release.active;
         this.artist = release.artist;
         this.cover = release.cover;
-        this.lableId = release.lableId;
+        this.labelId = release.labelId;
         this.genre = release.genre;
         this.barcode = release.barcode;
         this.credit = release.credit;
@@ -86,7 +86,7 @@ export class DraftReleaseModal {
     releaseId: string;
     cover: string;
     artist: ArtistsModal[];
-    lableId: string;
+    labelId: string;
     genre: string;
     barcode: string;
     credit: string;
@@ -106,7 +106,7 @@ export class DraftReleaseModal {
         this.releaseId = release.releaseId;
         this.cover = release.cover;
         this.artist = release.artist;
-        this.lableId = release.lableId;
+        this.labelId = release.labelId;
         this.genre = release.genre;
         this.barcode = release.barcode;
         this.credit = release.credit;

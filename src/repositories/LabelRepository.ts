@@ -1,17 +1,17 @@
 import { Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
-import { Lable } from "../interfaces/LableInterface";
+import { Label } from "../interfaces/LabelInterface";
 
 @Injectable()
-export class LableRepository {
+export class LabelRepository {
     constructor(
-        @InjectModel('Lable') private readonly lableModel: Model<Lable>
+        @InjectModel('Label') private readonly labelModel: Model<Label>
     ) {
     }
 
     async findAll(isDeleted: string): Promise<any[]> {
-        return await this.lableModel.aggregate([
+        return await this.labelModel.aggregate([
             {
                 $match: {
                     isDeleted: isDeleted === 'true', // Đã xóa hay chưa
@@ -21,7 +21,7 @@ export class LableRepository {
     }
 
     async findByOwner(isDeleted: string, owner: string): Promise<any[]> {
-        return await this.lableModel.aggregate([
+        return await this.labelModel.aggregate([
             {
                 $match: {
                     isDeleted: isDeleted === 'true', // Đã xóa hay chưa

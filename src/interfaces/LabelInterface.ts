@@ -1,6 +1,6 @@
 import {Document} from 'mongoose';
 
-export interface Lable extends Document {
+export interface Label extends Document {
     _id: string;
     owner: string;
     cover: string;

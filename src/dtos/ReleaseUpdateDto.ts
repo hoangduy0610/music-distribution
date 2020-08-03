@@ -15,8 +15,8 @@ export class ReleaseUpdateDto {
     @ApiProperty({ type: Artists, description: 'Các nghệ sĩ', required: true, isArray: true })
     readonly artist: Artists[];
 
-    @ApiProperty({ type: String, description: 'Id Lable', required: true })
-    readonly lableId: string;
+    @ApiProperty({ type: String, description: 'Id Label', required: true })
+    readonly labelId: string;
 
     @ApiProperty({ type: String, description: 'Thể Loại', required: true })
     readonly genre: string;
