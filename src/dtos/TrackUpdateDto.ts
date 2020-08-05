@@ -38,7 +38,4 @@ export class TrackUpdateDto {
 
     @ApiProperty({ type: Boolean, description: 'Có phải track này mới được phát hành lần đầu không?', required: true })
     readonly isFirstRelease: boolean;
-
-    @ApiProperty({ type: Boolean, description: 'Có phải bundle không?', required: true })
-    readonly isBundle: boolean;
 }

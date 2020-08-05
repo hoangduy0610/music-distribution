@@ -22,7 +22,6 @@ export interface Track extends Document {
     language: string;
     credit: string;
     isOwner: Boolean;
-    isBundle: Boolean;
     isFirstRelease: Boolean;
     createdAt: Date;
     createdBy: string;
@@ -52,7 +51,6 @@ export interface DraftTrack extends Document {
     language: string;
     credit: string;
     isOwner: Boolean;
-    isBundle: Boolean;
     isFirstRelease: Boolean;
     createdAt: Date;
     createdBy: string;

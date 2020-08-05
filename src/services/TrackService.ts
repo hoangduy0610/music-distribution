@@ -91,7 +91,6 @@ export class TrackService {
         if (trackUpdateDto.artist) track.artist = trackUpdateDto.artist;
         if (trackUpdateDto.credit) track.credit = trackUpdateDto.credit;
         if (trackUpdateDto.explicit) track.explicit = trackUpdateDto.explicit;
-        if (trackUpdateDto.isBundle) track.isBundle = trackUpdateDto.isBundle;
         if (trackUpdateDto.isFirstRelease) track.isFirstRelease = trackUpdateDto.isFirstRelease;
         if (trackUpdateDto.isOwner) track.isOwner = trackUpdateDto.isOwner;
         if (trackUpdateDto.language) track.language = trackUpdateDto.language;

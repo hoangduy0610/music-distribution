@@ -32,7 +32,6 @@ export class TrackModal {
     credit: string;
     isOwner: Boolean;
     isFirstRelease: Boolean;
-    isBundle: Boolean;
     createdAt: Date;
     createdBy: string;
     updatedAt: Date;
@@ -61,7 +60,6 @@ export class TrackModal {
         this.credit = track.credit;
         this.isOwner = track.isOwner;
         this.isFirstRelease = track.isFirstRelease;
-        this.isBundle = track.isBundle;
         this.createdAt = track.createdAt;
         this.createdBy = track.createdBy;
         this.updatedAt = track.updatedAt;
@@ -93,7 +91,6 @@ export class DraftTrackModal {
     credit: string;
     isOwner: Boolean;
     isFirstRelease: Boolean;
-    isBundle: Boolean;
     createdAt: Date;
     createdBy: string;
     updatedAt: Date;
@@ -115,7 +112,6 @@ export class DraftTrackModal {
         this.credit = track.credit;
         this.isOwner = track.isOwner;
         this.isFirstRelease = track.isFirstRelease;
-        this.isBundle = track.isBundle;
         this.createdAt = track.createdAt;
         this.createdBy = track.createdBy;
         this.updatedAt = track.updatedAt;
