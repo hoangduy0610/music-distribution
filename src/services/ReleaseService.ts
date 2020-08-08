@@ -79,6 +79,22 @@ export class ReleaseService {
         return new ReleaseModal(release);
     }
 
+    async findOneDraftByReleaseId(releaseId: string, user: User): Promise<DraftReleaseModal> {
+        const release = await this.draftReleaseModel.findOne({ releaseId });
+
+        if (!releaseId || !release) {
+            throw new ApplicationException(HttpStatus.BAD_REQUEST, MessageCode.RELEASE_NOT_FOUND);
+        }
+
+        if (!user.roles.includes(EnumRoles.ROLE_ADMIN)) {
+            if (release.owner !== user.username) {
+                throw new ApplicationException(HttpStatus.FORBIDDEN, MessageCode.ERROR_USER_NOT_HAVE_PERMISSION)
+            }
+        }
+
+        return new DraftReleaseModal(release);
+    }
+
     async findArtists(releaseId: string): Promise<any> {
         const release = await this.releaseModel.findOne({ releaseId });
         if (!release) {

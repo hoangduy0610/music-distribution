@@ -106,6 +106,15 @@ export class ReleaseController {
         return res.status(HttpStatus.OK).json(await this.releaseService.findOneByReleaseId(releaseId, req.user));
     }
 
+    @Get('/draft')
+    @UseGuards(AuthGuard('jwt'), RolesGuard)
+    @ApiBearerAuth()
+    @ApiQuery({ name: 'releaseId', required: true, type: String, description: 'Release ID' })
+    @ApiOperation({ summary: 'Lấy thông tin release', description: 'Api lấy thông tin release' })
+    async findOneDraft(@Req() req, @Res() res, @Query('releaseId') releaseId: string) {
+        return res.status(HttpStatus.OK).json(await this.releaseService.findOneDraftByReleaseId(releaseId, req.user));
+    }
+
     @Put('')
     @UseGuards(AuthGuard('jwt'), RolesGuard)
     @ApiBearerAuth()
