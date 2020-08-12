@@ -24,6 +24,9 @@ export class TrackUpdateDto {
     @ApiProperty({ type: String, description: 'ISRC', required: true })
     readonly ISRC: string;
 
+    @ApiProperty({ type: String, description: 'Genre', required: true })
+    readonly genre: string;
+
     @ApiProperty({ type: String, description: 'Credit', required: true })
     readonly credit: string;
 

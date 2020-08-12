@@ -26,6 +26,7 @@ export class TrackModal {
     versionType: string;
     explicit: boolean;
     ISRC: string;
+    genre: string;
     artist: ArtistsModal[];
     publisher: string;
     language: string;
@@ -54,6 +55,7 @@ export class TrackModal {
         this.versionType = track.versionType;
         this.explicit = track.explicit;
         this.ISRC = track.ISRC;
+        this.genre = track.genre;
         this.artist = track.artist;
         this.publisher = track.publisher;
         this.language = track.language;
@@ -85,6 +87,7 @@ export class DraftTrackModal {
     versionType: string;
     explicit: boolean;
     ISRC: string;
+    genre: string;
     artist: ArtistsModal[];
     publisher: string;
     language: string;
@@ -106,6 +109,7 @@ export class DraftTrackModal {
         this.versionType = track.versionType;
         this.explicit = track.explicit;
         this.ISRC = track.ISRC;
+        this.genre = track.genre;
         this.artist = track.artist;
         this.publisher = track.publisher;
         this.language = track.language;

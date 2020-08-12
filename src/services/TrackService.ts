@@ -88,6 +88,7 @@ export class TrackService {
         }
 
         if (trackUpdateDto.ISRC) track.ISRC = trackUpdateDto.ISRC;
+        if (trackUpdateDto.genre) track.genre = trackUpdateDto.genre;
         if (trackUpdateDto.artist) track.artist = trackUpdateDto.artist;
         if (trackUpdateDto.credit) track.credit = trackUpdateDto.credit;
         if (trackUpdateDto.explicit) track.explicit = trackUpdateDto.explicit;

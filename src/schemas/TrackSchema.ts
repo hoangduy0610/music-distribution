@@ -15,6 +15,7 @@ export const TrackSchema = new Schema({
     versionType: { type: String, require: true, enum: ['Remix', 'Original'] },
     explicit: { type: Boolean, require: true },
     ISRC: { type: String, require: true },
+    genre: { type: String, require: true },
     artist: {
         type: [Artists],
         require: true
@@ -48,6 +49,7 @@ export const DraftTrackSchema = new Schema({
     versionType: { type: String, require: false, enum: ['Remix', 'Original'] },
     explicit: { type: Boolean, require: false },
     ISRC: { type: String, require: false },
+    genre: { type: String, require: true },
     artist: {
         type: [Artists],
         require: false
