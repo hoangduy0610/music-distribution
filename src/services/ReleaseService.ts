@@ -18,11 +18,13 @@ import { IdUtil } from '../utils/IdUtil';
 import { FileService } from './FileService';
 import { FileStorageEnum } from '../commons/FileStorageEnum';
 import { UserService } from './UserService';
+import { Track } from '../interfaces/TrackInterface';
 
 @Injectable()
 export class ReleaseService {
     constructor(
         @InjectModel('Release') private readonly releaseModel: Model<Release>,
+        @InjectModel('Track') private readonly trackModel: Model<Track>,
         @InjectModel('DraftRelease') private readonly draftReleaseModel: Model<DraftRelease>,
         private readonly releaseRepository: ReleaseRepository,
         private readonly draftReleaseRepository: DraftReleaseRepository,
@@ -154,6 +156,39 @@ export class ReleaseService {
         releaseUpdate.updatedBy = user.username;
 
         return new ReleaseModal(await releaseUpdate.save());
+    }
+
+    async trackListOrder(releaseId: string, trackIds: string[], user: User): Promise<TrackModal[]> {
+        const release = await this.findOneByReleaseId(releaseId, user);
+        if (!release) {
+            throw new ApplicationException(HttpStatus.NOT_FOUND, MessageCode.RELEASE_NOT_FOUND);
+        }
+        if (release.isDeleted) {
+            throw new ApplicationException(HttpStatus.NOT_FOUND, MessageCode.RELEASE_IS_DELETED);
+        }
+        const isAdmin = user.roles && user.roles.includes(EnumRoles.ROLE_ADMIN);
+        if (release.owner !== user.username && !isAdmin) {
+            throw new ApplicationException(HttpStatus.FORBIDDEN, MessageCode.ERROR_USER_NOT_HAVE_PERMISSION);
+        }
+        trackIds.forEach(async (trackId: string, trackOrder: number) => {
+            await this.trackModel.updateOne({ releaseId, trackId }, { $set: { trackOrder } }).exec();
+        })
+        return await this.trackService.findAllByReleaseId(releaseId);
+    }
+
+    async trackDraftListOrder(releaseId: string, trackIds: string[], user: User): Promise<TrackModal[]> {
+        const release = await this.findOneDraftByReleaseId(releaseId, user);
+        if (!release) {
+            throw new ApplicationException(HttpStatus.NOT_FOUND, MessageCode.RELEASE_NOT_FOUND);
+        }
+        const isAdmin = user.roles && user.roles.includes(EnumRoles.ROLE_ADMIN);
+        if (release.owner !== user.username && !isAdmin) {
+            throw new ApplicationException(HttpStatus.FORBIDDEN, MessageCode.ERROR_USER_NOT_HAVE_PERMISSION);
+        }
+        trackIds.forEach(async (trackId: string, trackOrder: number) => {
+            await this.trackModel.updateOne({ releaseId, trackId }, { $set: { trackOrder } }).exec();
+        })
+        return await this.trackService.findAllByReleaseId(releaseId);
     }
 
     async active(releaseId: string, updatedBy: string): Promise<ReleaseModal> {

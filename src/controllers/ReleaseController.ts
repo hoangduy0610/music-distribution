@@ -26,6 +26,7 @@ import { diskStorage } from 'multer';
 import { FileUtils } from '../utils/FileUtil';
 import { FilesInterceptor } from '@nestjs/platform-express';
 import { FileUploadDto } from '../dtos/FileUploadDto';
+import { TrackOrderDto } from '../dtos/TrackOrderDto';
 
 const myStorage = diskStorage({
     // Specify where to save the file
@@ -122,6 +123,24 @@ export class ReleaseController {
     @ApiOperation({ summary: 'Sửa release', description: 'Sửa thông tin release' })
     async update(@Req() req, @Res() res, @Query('releaseId') releaseId: string, @Body() releaseUpdateDto: ReleaseUpdateDto) {
         return res.status(HttpStatus.OK).json(await this.releaseService.update(releaseId, req.user, releaseUpdateDto));
+    }
+
+    @Put('/tracks/order')
+    @UseGuards(AuthGuard('jwt'), RolesGuard)
+    @ApiBearerAuth()
+    @ApiQuery({ name: 'releaseId', required: true, type: String, description: 'Release ID' })
+    @ApiOperation({ summary: 'Sửa thứ tự track', description: 'Sửa thứ tự track' })
+    async updateOrderByList(@Req() req, @Res() res, @Query('releaseId') releaseId: string, @Body() order: TrackOrderDto) {
+        return res.status(HttpStatus.OK).json(await this.releaseService.trackListOrder(releaseId, order.trackIds, req.user));
+    }
+
+    @Put('/draft/tracks/order')
+    @UseGuards(AuthGuard('jwt'), RolesGuard)
+    @ApiBearerAuth()
+    @ApiQuery({ name: 'releaseId', required: true, type: String, description: 'Release ID' })
+    @ApiOperation({ summary: 'Sửa thứ tự track', description: 'Sửa thứ tự track' })
+    async updateDraftOrderByList(@Req() req, @Res() res, @Query('releaseId') releaseId: string, @Body() order: TrackOrderDto) {
+        return res.status(HttpStatus.OK).json(await this.releaseService.trackDraftListOrder(releaseId, order.trackIds, req.user));
     }
 
     @Put('/active')
