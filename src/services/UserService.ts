@@ -42,6 +42,19 @@ export class UserService {
         return new UserModal(user);
     }
 
+    async findArtistByUsername(username: string): Promise<UserModal> {
+        var users = await this.userRepository.findByUsername(username);
+        if (!users || !users.length) {
+            throw new ApplicationException(HttpStatus.NOT_FOUND, MessageCode.USER_NOT_REGISTER);
+        }
+
+        const user = users[0];
+        if (user.isDeleted) {
+            throw new ApplicationException(HttpStatus.FORBIDDEN, MessageCode.USER_IS_DELETED);
+        }
+        return new UserModal(user);
+    }
+
     async create(createdBy: string, userCreateDto: UserCreateDto): Promise<UserModal> {
         const user = await this.userModel.findOne({ username: userCreateDto.username }).exec();
 

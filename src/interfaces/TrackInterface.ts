@@ -17,12 +17,12 @@ export interface Track extends Document {
     versionType: string;
     explicit: boolean;
     ISRC: string;
+    genre: string;
     artist: Artists[],
     publisher: string;
     language: string;
     credit: string;
     isOwner: Boolean;
-    isBundle: Boolean;
     isFirstRelease: Boolean;
     createdAt: Date;
     createdBy: string;
@@ -47,12 +47,12 @@ export interface DraftTrack extends Document {
     versionType: string;
     explicit: boolean;
     ISRC: string;
+    genre: string;
     artist: Artists[],
     publisher: string;
     language: string;
     credit: string;
     isOwner: Boolean;
-    isBundle: Boolean;
     isFirstRelease: Boolean;
     createdAt: Date;
     createdBy: string;

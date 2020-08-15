@@ -17,16 +17,20 @@ import { DraftReleaseUpdateDto } from '../dtos/DraftReleaseUpdateDto';
 import { IdUtil } from '../utils/IdUtil';
 import { FileService } from './FileService';
 import { FileStorageEnum } from '../commons/FileStorageEnum';
+import { UserService } from './UserService';
+import { Track } from '../interfaces/TrackInterface';
 
 @Injectable()
 export class ReleaseService {
     constructor(
         @InjectModel('Release') private readonly releaseModel: Model<Release>,
+        @InjectModel('Track') private readonly trackModel: Model<Track>,
         @InjectModel('DraftRelease') private readonly draftReleaseModel: Model<DraftRelease>,
         private readonly releaseRepository: ReleaseRepository,
         private readonly draftReleaseRepository: DraftReleaseRepository,
         private readonly trackService: TrackService,
         private readonly fileService: FileService,
+        private readonly userService: UserService,
     ) {
     }
 
@@ -77,6 +81,43 @@ export class ReleaseService {
         return new ReleaseModal(release);
     }
 
+    async findOneDraftByReleaseId(releaseId: string, user: User): Promise<DraftReleaseModal> {
+        const release = await this.draftReleaseModel.findOne({ releaseId });
+
+        if (!releaseId || !release) {
+            throw new ApplicationException(HttpStatus.BAD_REQUEST, MessageCode.RELEASE_NOT_FOUND);
+        }
+
+        if (!user.roles.includes(EnumRoles.ROLE_ADMIN)) {
+            if (release.owner !== user.username) {
+                throw new ApplicationException(HttpStatus.FORBIDDEN, MessageCode.ERROR_USER_NOT_HAVE_PERMISSION)
+            }
+        }
+
+        return new DraftReleaseModal(release);
+    }
+
+    async findArtists(releaseId: string): Promise<any> {
+        const release = await this.releaseModel.findOne({ releaseId });
+        if (!release) {
+            throw new ApplicationException(HttpStatus.NOT_FOUND, MessageCode.RELEASE_NOT_FOUND);
+        }
+        if (release.isDeleted) {
+            throw new ApplicationException(HttpStatus.NOT_FOUND, MessageCode.RELEASE_IS_DELETED);
+        }
+
+        var userInfomation: any[] = [];
+        const info = release.artist;
+
+        for (let i = 0; i < info.length; i++) {
+            const data = info[i];
+            let user = await this.userService.findArtistByUsername(data.username);
+            userInfomation.push({ name: user.fullName, role: data.role });
+            //userInfomation[i].user = user;
+        }
+        return userInfomation;
+    }
+
     async update(releaseId: string, user: User, releaseUpdateDto: ReleaseUpdateDto): Promise<ReleaseModal> {
         // Kiểm tra input
         if (!releaseUpdateDto) {
@@ -101,9 +142,6 @@ export class ReleaseService {
         if (releaseUpdate.isDeleted) {
             throw new ApplicationException(HttpStatus.BAD_REQUEST, MessageCode.RELEASE_IS_DELETED);
         }
-        if (!releaseUpdate.active) {
-            throw new ApplicationException(HttpStatus.BAD_REQUEST, MessageCode.RELEASE_NOT_ACTIVE);
-        }
 
         if (releaseUpdateDto.artist && releaseUpdateDto.artist.length) releaseUpdate.artist = releaseUpdateDto.artist;
         if (releaseUpdateDto.barcode) releaseUpdate.barcode = releaseUpdateDto.barcode;
@@ -111,7 +149,7 @@ export class ReleaseService {
         if (releaseUpdateDto.credit) releaseUpdate.credit = releaseUpdateDto.credit;
         if (releaseUpdateDto.description) releaseUpdate.description = releaseUpdateDto.description;
         if (releaseUpdateDto.genre) releaseUpdate.genre = releaseUpdateDto.genre;
-        if (releaseUpdateDto.lableId) releaseUpdate.lableId = releaseUpdateDto.lableId;
+        if (releaseUpdateDto.labelId) releaseUpdate.labelId = releaseUpdateDto.labelId;
         if (releaseUpdateDto.releaseAt) releaseUpdate.releaseAt = releaseUpdateDto.releaseAt;
         if (releaseUpdateDto.shops) releaseUpdate.shops = releaseUpdateDto.shops;
         if (releaseUpdateDto.title) releaseUpdate.title = releaseUpdateDto.title;
@@ -120,9 +158,48 @@ export class ReleaseService {
         return new ReleaseModal(await releaseUpdate.save());
     }
 
+    async trackListOrder(releaseId: string, trackIds: string[], user: User): Promise<TrackModal[]> {
+        const release = await this.findOneByReleaseId(releaseId, user);
+        if (!release) {
+            throw new ApplicationException(HttpStatus.NOT_FOUND, MessageCode.RELEASE_NOT_FOUND);
+        }
+        if (release.isDeleted) {
+            throw new ApplicationException(HttpStatus.NOT_FOUND, MessageCode.RELEASE_IS_DELETED);
+        }
+        const isAdmin = user.roles && user.roles.includes(EnumRoles.ROLE_ADMIN);
+        if (release.owner !== user.username && !isAdmin) {
+            throw new ApplicationException(HttpStatus.FORBIDDEN, MessageCode.ERROR_USER_NOT_HAVE_PERMISSION);
+        }
+        trackIds.forEach(async (trackId: string, trackOrder: number) => {
+            await this.trackModel.updateOne({ releaseId, trackId }, { $set: { trackOrder } }).exec();
+        })
+        return await this.trackService.findAllByReleaseId(releaseId);
+    }
+
+    async trackDraftListOrder(releaseId: string, trackIds: string[], user: User): Promise<TrackModal[]> {
+        const release = await this.findOneDraftByReleaseId(releaseId, user);
+        if (!release) {
+            throw new ApplicationException(HttpStatus.NOT_FOUND, MessageCode.RELEASE_NOT_FOUND);
+        }
+        const isAdmin = user.roles && user.roles.includes(EnumRoles.ROLE_ADMIN);
+        if (release.owner !== user.username && !isAdmin) {
+            throw new ApplicationException(HttpStatus.FORBIDDEN, MessageCode.ERROR_USER_NOT_HAVE_PERMISSION);
+        }
+        trackIds.forEach(async (trackId: string, trackOrder: number) => {
+            await this.trackModel.updateOne({ releaseId, trackId }, { $set: { trackOrder } }).exec();
+        })
+        return await this.trackService.findAllByReleaseId(releaseId);
+    }
+
     async active(releaseId: string, updatedBy: string): Promise<ReleaseModal> {
         const release = await this.releaseModel.findOne({ releaseId }).exec();
         release.active = true;
+        release.updatedBy = updatedBy;
+        return new ReleaseModal(await release.save());
+    }
+
+    async released(releaseId: string, updatedBy: string): Promise<ReleaseModal> {
+        const release = await this.releaseModel.findOne({ releaseId }).exec();
         release.status = 'Released';
         release.updatedBy = updatedBy;
         return new ReleaseModal(await release.save());
@@ -226,7 +303,7 @@ export class ReleaseService {
         if (releaseUpdateDto.credit) releaseUpdate.credit = releaseUpdateDto.credit;
         if (releaseUpdateDto.description) releaseUpdate.description = releaseUpdateDto.description;
         if (releaseUpdateDto.genre) releaseUpdate.genre = releaseUpdateDto.genre;
-        if (releaseUpdateDto.lableId) releaseUpdate.lableId = releaseUpdateDto.lableId;
+        if (releaseUpdateDto.labelId) releaseUpdate.labelId = releaseUpdateDto.labelId;
         if (releaseUpdateDto.releaseAt) releaseUpdate.releaseAt = releaseUpdateDto.releaseAt;
         if (releaseUpdateDto.shops) releaseUpdate.shops = releaseUpdateDto.shops;
         if (releaseUpdateDto.title) releaseUpdate.title = releaseUpdateDto.title;
@@ -275,7 +352,7 @@ export class ReleaseService {
         if (release.credit) news.credit = release.credit;
         if (release.description) news.description = release.description;
         if (release.genre) news.genre = release.genre;
-        if (release.lableId) news.lableId = release.lableId;
+        if (release.labelId) news.labelId = release.labelId;
         if (release.releaseAt) news.releaseAt = release.releaseAt;
         if (release.shops) news.shops = release.shops;
         if (release.title) news.title = release.title;
@@ -311,6 +388,28 @@ export class ReleaseService {
         return new ReleaseModal(await release.save())
     }
 
+    async uploadCoverDraft(releaseId: string, user: User, files: any): Promise<DraftReleaseModal> {
+        const release = await this.draftReleaseModel.findOne({ releaseId }),
+            isAdmin = user.roles.includes(EnumRoles.ROLE_ADMIN);
+        if (!release) throw new ApplicationException(HttpStatus.NOT_FOUND, MessageCode.RELEASE_NOT_FOUND)
+        if (release.owner !== user.username && !isAdmin) throw new ApplicationException(HttpStatus.FORBIDDEN, MessageCode.ERROR_USER_NOT_HAVE_PERMISSION)
+
+        if (!files || files.empty) {
+            throw new ApplicationException(HttpStatus.BAD_REQUEST, MessageCode.FILE_NOT_FOUND)
+        }
+        const uploaded: String[] = [];
+        files.forEach(file => {
+            uploaded.push(file.originalname)
+        });
+
+        const upload = await this.fileService.saveFiles(user, uploaded, FileStorageEnum.IMAGES, releaseId);
+        if (!upload || !upload.status) throw new ApplicationException(HttpStatus.SERVICE_UNAVAILABLE, MessageCode.FILE_CANNOT_UPLOAD)
+
+        release.cover = upload.msg[0].internalPath;
+
+        return new DraftReleaseModal(await release.save())
+    }
+
     async deleteCover(releaseId: string, user: User): Promise<ReleaseModal> {
         const release = await this.releaseModel.findOne({ releaseId }),
             isAdmin = user.roles.includes(EnumRoles.ROLE_ADMIN);
@@ -321,5 +420,17 @@ export class ReleaseService {
         release.cover = "";
 
         return new ReleaseModal(await release.save())
+    }
+
+    async deleteCoverDraft(releaseId: string, user: User): Promise<DraftReleaseModal> {
+        const release = await this.draftReleaseModel.findOne({ releaseId }),
+            isAdmin = user.roles.includes(EnumRoles.ROLE_ADMIN);
+        if (!release) throw new ApplicationException(HttpStatus.NOT_FOUND, MessageCode.RELEASE_NOT_FOUND)
+        if (release.owner !== user.username && !isAdmin) throw new ApplicationException(HttpStatus.FORBIDDEN, MessageCode.ERROR_USER_NOT_HAVE_PERMISSION)
+
+        await this.fileService.delete(releaseId, { reason: 'Delete cover' });
+        release.cover = "";
+
+        return new DraftReleaseModal(await release.save())
     }
 }

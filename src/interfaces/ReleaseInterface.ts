@@ -13,7 +13,7 @@ export interface Release extends Document {
     active: boolean;
     cover: string;
     artist: Artists[],
-    lableId: string;
+    labelId: string;
     genre: string;
     barcode: string;
     credit: string;
@@ -42,7 +42,7 @@ export interface DraftRelease extends Document {
     releaseId: string;
     cover: string;
     artist: Artists[],
-    lableId: string;
+    labelId: string;
     genre: string;
     barcode: string;
     credit: string;

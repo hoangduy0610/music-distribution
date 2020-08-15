@@ -1,6 +1,6 @@
 import { Schema } from 'mongoose';
 
-export const LableSchema = new Schema({
+export const LabelSchema = new Schema({
     owner: { type: String, require: true },
     cover: { type: String, require: true },
     name: { type: String, require: true },

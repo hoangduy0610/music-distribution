@@ -2,7 +2,7 @@ import { Schema } from 'mongoose';
 
 const Artists = new Schema({
     username: { type: String, required: true/*, enum: ['supplier', 'producer', 'transporter'] */ },
-    role: { type: String, required: true, enum: ['performer', 'producer'] },
+    role: { type: String, required: true, enum: ['main', 'performer', 'producer'] },
 }, { _id: false });
 
 export const TrackSchema = new Schema({
@@ -15,6 +15,7 @@ export const TrackSchema = new Schema({
     versionType: { type: String, require: true, enum: ['Remix', 'Original'] },
     explicit: { type: Boolean, require: true },
     ISRC: { type: String, require: true },
+    genre: { type: String, require: true },
     artist: {
         type: [Artists],
         require: true
@@ -24,7 +25,6 @@ export const TrackSchema = new Schema({
     credit: { type: String, require: true },
     isOwner: { type: Boolean, require: true },
     isFirstRelease: { type: Boolean, require: true },
-    isBundle: { type: Boolean, require: true },
     createdAt: { type: Date, require: true },
     createdBy: { type: String, require: true },
     updatedAt: { type: Date, require: false },
@@ -49,6 +49,7 @@ export const DraftTrackSchema = new Schema({
     versionType: { type: String, require: false, enum: ['Remix', 'Original'] },
     explicit: { type: Boolean, require: false },
     ISRC: { type: String, require: false },
+    genre: { type: String, require: true },
     artist: {
         type: [Artists],
         require: false
@@ -58,7 +59,6 @@ export const DraftTrackSchema = new Schema({
     credit: { type: String, require: false },
     isOwner: { type: Boolean, require: false },
     isFirstRelease: { type: Boolean, require: false },
-    isBundle: { type: Boolean, require: false },
     createdAt: { type: Date, require: true },
     createdBy: { type: String, require: false },
     updatedAt: { type: Date, require: false },

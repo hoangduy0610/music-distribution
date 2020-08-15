@@ -4,7 +4,7 @@ class Artists {
     @ApiProperty({ type: String, description: 'Tên người dùng', required: true })
     username: string;
 
-    @ApiProperty({ type: String, description: 'Vai trò', required: true, enum: ['performer', 'producer'] })
+    @ApiProperty({ type: String, description: 'Vai trò', required: true, enum: ['main', 'performer', 'producer'] })
     role: string;
 }
 
@@ -24,6 +24,9 @@ export class TrackUpdateDto {
     @ApiProperty({ type: String, description: 'ISRC', required: true })
     readonly ISRC: string;
 
+    @ApiProperty({ type: String, description: 'Genre', required: true })
+    readonly genre: string;
+
     @ApiProperty({ type: String, description: 'Credit', required: true })
     readonly credit: string;
 
@@ -38,7 +41,4 @@ export class TrackUpdateDto {
 
     @ApiProperty({ type: Boolean, description: 'Có phải track này mới được phát hành lần đầu không?', required: true })
     readonly isFirstRelease: boolean;
-
-    @ApiProperty({ type: Boolean, description: 'Có phải bundle không?', required: true })
-    readonly isBundle: boolean;
 }

@@ -14,6 +14,7 @@ import { FileService } from './FileService';
 import { IdUtil } from '../utils/IdUtil';
 import { FileStorageEnum } from '../commons/FileStorageEnum';
 import { BannedInfoDto } from '../dtos/BannedInfoDto';
+import { UserService } from './UserService';
 
 @Injectable()
 export class TrackService {
@@ -22,12 +23,35 @@ export class TrackService {
         @InjectModel('DraftTrack') private readonly draftTrackModel: Model<DraftTrack>,
         private readonly trackRepository: TrackRepository,
         private readonly fileService: FileService,
+        private readonly userService: UserService,
     ) {
     }
 
-    async findAllByReleaseId(trackId: string): Promise<TrackModal[]> {
-        return TrackModal.fromTracks(await this.trackRepository.findByReleaseId(trackId));
+    async findAllByReleaseId(releaseId: string): Promise<TrackModal[]> {
+        return TrackModal.fromTracks(await this.trackRepository.findByReleaseId(releaseId));
     }
+
+    async findArtists(trackId: string): Promise<any> {
+        const track = await this.trackModel.findOne({ trackId });
+        if (!track) {
+            throw new ApplicationException(HttpStatus.NOT_FOUND, MessageCode.TRACK_NOT_FOUND);
+        }
+        if (track.isDeleted) {
+            throw new ApplicationException(HttpStatus.NOT_FOUND, MessageCode.TRACK_IS_DELETED);
+        }
+
+        var userInfomation: any[] = [];
+        const info = track.artist;
+
+        for (let i = 0; i < info.length; i++) {
+            const data = info[i];
+            let user = await this.userService.findArtistByUsername(data.username);
+            userInfomation.push({ name: user.fullName, role: data.role });
+            //userInfomation[i].user = user;
+        }
+        return userInfomation;
+    }
+
 
     async trackOrder(trackId: string, user: User, order: number): Promise<TrackModal> {
         const track: Track = await this.trackModel.findOne({ trackId }).exec();
@@ -64,10 +88,10 @@ export class TrackService {
         }
 
         if (trackUpdateDto.ISRC) track.ISRC = trackUpdateDto.ISRC;
+        if (trackUpdateDto.genre) track.genre = trackUpdateDto.genre;
         if (trackUpdateDto.artist) track.artist = trackUpdateDto.artist;
         if (trackUpdateDto.credit) track.credit = trackUpdateDto.credit;
         if (trackUpdateDto.explicit) track.explicit = trackUpdateDto.explicit;
-        if (trackUpdateDto.isBundle) track.isBundle = trackUpdateDto.isBundle;
         if (trackUpdateDto.isFirstRelease) track.isFirstRelease = trackUpdateDto.isFirstRelease;
         if (trackUpdateDto.isOwner) track.isOwner = trackUpdateDto.isOwner;
         if (trackUpdateDto.language) track.language = trackUpdateDto.language;

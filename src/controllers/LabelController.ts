@@ -14,13 +14,13 @@ import {
     UseInterceptors
 } from '@nestjs/common';
 import { ApiBearerAuth, ApiConsumes, ApiQuery, ApiOperation, ApiTags, ApiBody } from '@nestjs/swagger';
-import { LableService } from '../services/LableService';
+import { LabelService } from '../services/LabelService';
 import { RolesGuard } from '../guards/RoleGuard';
 import { AuthGuard } from '@nestjs/passport';
 import { Roles } from '../guards/RoleDecorator';
 import { EnumRoles } from '../commons/EnumRoles';
-import { LableCreateDto } from '../dtos/LableCreateDto';
-import { LableUpdateDto } from '../dtos/LableUpdateDto';
+import { LabelCreateDto } from '../dtos/LabelCreateDto';
+import { LabelUpdateDto } from '../dtos/LabelUpdateDto';
 import { BannedInfoDto } from '../dtos/BannedInfoDto';
 import { FileUploadDto } from '../dtos/FileUploadDto';
 import { FilesInterceptor } from '@nestjs/platform-express';
@@ -36,11 +36,11 @@ const myStorage = diskStorage({
     filename: FileUtils.exceptFileImage,
 });
 
-@ApiTags('lable')
-@Controller('lable')
-export class LableController {
+@ApiTags('label')
+@Controller('label')
+export class LabelController {
     constructor(
-        private readonly lableService: LableService
+        private readonly labelService: LabelService
     ) {
     }
 
@@ -48,50 +48,50 @@ export class LableController {
     @UseGuards(AuthGuard('jwt'), RolesGuard)
     @ApiBearerAuth()
     @ApiQuery({ name: 'isDeleted', required: false, type: String, description: 'Trạng thái kích hoạt', enum: ['true', 'false'] })
-    @ApiOperation({ summary: 'Lấy danh sách lable', description: 'Api lấy danh sách lable' })
+    @ApiOperation({ summary: 'Lấy danh sách label', description: 'Api lấy danh sách label' })
     async findAll(@Req() req, @Res() res, @Query('isDeleted') isDeleted: string) {
-        return res.status(HttpStatus.OK).json(await this.lableService.findAll(isDeleted, req.user));
+        return res.status(HttpStatus.OK).json(await this.labelService.findAll(isDeleted, req.user));
     }
 
     @Get('')
     @UseGuards(AuthGuard('jwt'), RolesGuard)
     @ApiBearerAuth()
-    @ApiQuery({ name: 'id', required: true, type: String, description: 'Id lable' })
-    @ApiOperation({ summary: 'Lấy thông tin lable', description: 'Api lấy thông tin lable' })
+    @ApiQuery({ name: 'id', required: true, type: String, description: 'Id label' })
+    @ApiOperation({ summary: 'Lấy thông tin label', description: 'Api lấy thông tin label' })
     async find(@Req() req, @Res() res, @Query('id') id: string) {
-        return res.status(HttpStatus.OK).json(await this.lableService.find(id, req.user));
+        return res.status(HttpStatus.OK).json(await this.labelService.find(id, req.user));
     }
 
     @Post('')
     @UseGuards(AuthGuard('jwt'), RolesGuard)
     @ApiBearerAuth()
-    @ApiOperation({ summary: 'Tạo mới lable', description: 'Tạo mới 1 lable' })
-    async create(@Req() req, @Res() res, @Body() lableCreateDto: LableCreateDto) {
-        return res.status(HttpStatus.OK).json(await this.lableService.create(req.user, lableCreateDto));
+    @ApiOperation({ summary: 'Tạo mới label', description: 'Tạo mới 1 label' })
+    async create(@Req() req, @Res() res, @Body() labelCreateDto: LabelCreateDto) {
+        return res.status(HttpStatus.OK).json(await this.labelService.create(req.user, labelCreateDto));
     }
 
     @Put('')
     @UseGuards(AuthGuard('jwt'), RolesGuard)
     @ApiBearerAuth()
-    @ApiQuery({ name: 'id', required: true, type: String, description: 'Id lable' })
-    @ApiOperation({ summary: 'Sửa lable', description: 'Sửa 1 lable' })
-    async update(@Req() req, @Res() res, @Query('id') id: string, @Body() lableUpdateDto: LableUpdateDto) {
-        return res.status(HttpStatus.OK).json(await this.lableService.update(id, req.user, lableUpdateDto));
+    @ApiQuery({ name: 'id', required: true, type: String, description: 'Id label' })
+    @ApiOperation({ summary: 'Sửa label', description: 'Sửa 1 label' })
+    async update(@Req() req, @Res() res, @Query('id') id: string, @Body() labelUpdateDto: LabelUpdateDto) {
+        return res.status(HttpStatus.OK).json(await this.labelService.update(id, req.user, labelUpdateDto));
     }
 
     @Delete('')
     @UseGuards(AuthGuard('jwt'), RolesGuard)
     @ApiBearerAuth()
-    @ApiQuery({ name: 'id', required: true, type: String, description: 'Id lable' })
-    @ApiOperation({ summary: 'Xóa lable', description: 'Xóa 1 lable' })
+    @ApiQuery({ name: 'id', required: true, type: String, description: 'Id label' })
+    @ApiOperation({ summary: 'Xóa label', description: 'Xóa 1 label' })
     async delete(@Req() req, @Res() res, @Query('id') id: string, @Body() bannedInfoDto: BannedInfoDto) {
-        return res.status(HttpStatus.OK).json(await this.lableService.delete(id, req.user, bannedInfoDto));
+        return res.status(HttpStatus.OK).json(await this.labelService.delete(id, req.user, bannedInfoDto));
     }
 
     @Post('/image')
     @UseGuards(AuthGuard('jwt'), RolesGuard)
     @ApiBearerAuth()
-    @ApiQuery({ name: 'id', required: true, type: String, description: 'Lable Id' })
+    @ApiQuery({ name: 'id', required: true, type: String, description: 'Label Id' })
     @ApiConsumes('multipart/form-data')
     @UseInterceptors(FilesInterceptor('files', 20, {
         storage: myStorage,
@@ -100,17 +100,17 @@ export class LableController {
         description: 'List Image',
         type: FileUploadDto,
     })
-    @ApiOperation({ summary: 'Thêm cover cho lable', description: 'Thêm cover cho lable' })
+    @ApiOperation({ summary: 'Thêm cover cho label', description: 'Thêm cover cho label' })
     async uploadCover(@Req() req, @Res() res, @Query('id') id: string, @UploadedFiles() files) {
-        return res.status(HttpStatus.OK).json(await this.lableService.uploadCover(id, req.user, files));
+        return res.status(HttpStatus.OK).json(await this.labelService.uploadCover(id, req.user, files));
     }
 
     @Delete('/image')
     @UseGuards(AuthGuard('jwt'), RolesGuard)
     @ApiBearerAuth()
-    @ApiQuery({ name: 'id', required: true, type: String, description: 'Lable Id' })
-    @ApiOperation({ summary: 'Xóa cover lable', description: 'Xóa cover lable' })
+    @ApiQuery({ name: 'id', required: true, type: String, description: 'Label Id' })
+    @ApiOperation({ summary: 'Xóa cover label', description: 'Xóa cover label' })
     async deleteCover(@Req() req, @Res() res, @Query('id') id: string,) {
-        return res.status(HttpStatus.OK).json(await this.lableService.deleteCover(id, req.user));
+        return res.status(HttpStatus.OK).json(await this.labelService.deleteCover(id, req.user));
     }
 }
